@@ -62,6 +62,9 @@ namespace AlvericsQuestEditor
 
             // Método chamado quando a tela é redimensionada
             window.Resized += Window_Resized;
+
+            // Método chamado quando um botão do mouse é pressionado
+            window.MouseButtonPressed += Window_MouseButtonPressed;
         }
 
         public void Executar()
@@ -96,6 +99,15 @@ namespace AlvericsQuestEditor
         {
             RenderWindow window = (RenderWindow)sender;
             window.Close();
+        }
+
+        /* Eventos quando os botões do mouse são pressionados */
+        private void Window_MouseButtonPressed(object sender, MouseButtonEventArgs e)
+        {
+            if (e.Button == Mouse.Button.Left)
+            {
+                menu.BotaoPressionado(window, Mouse.GetPosition(window));
+            }
         }
     }
 }
