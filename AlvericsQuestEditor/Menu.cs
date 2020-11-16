@@ -46,8 +46,7 @@ namespace AlvericsQuestEditor
         // Botão para gerenciar as músicas do jogo
         private Botao bMusicas;
 
-
-        /*// Botão para aumentar o valor do tempo de início de ativação de uma armadilha
+        // Botão para aumentar o valor do tempo de início de ativação de uma armadilha
         private Botao bInicioAtivacaoSoma;
 
         // Botão para reduzir o valor do tempo de início de ativação de uma armadilha
@@ -63,89 +62,57 @@ namespace AlvericsQuestEditor
         private Botao bTempoEntreAtivacoesSoma;
 
         // Botão para reduzir o valor do tempo entre ativações de uma armadilha
-        private Botao bTempoEntreAtivacoesSub;*/
+        private Botao bTempoEntreAtivacoesSub;
 
         // Lista contendo todos os botoes
         private List<Botao> botoes;
 
+        // Lista de botões quando a opção de propriedades é ativada
+        private List<Botao> botoesPropriedades;
+
         // Lista contendo toda a parte textual do menu
         private List<Text> labels;
+
+        // Fonte para os textos
+        private Font fonte;
+
+        // Textos do menu de propriedades
+        private Text tempoInicial;
+        private Text tempoEntreAtivacoes;
+        private Text tempoAtivado;
+        private Text tiValorT;
+        private Text teaValorT;
+        private Text taValorT;
+
+        // Variáveis dos valores das propriedades
+        private float tiValor;
+        private float teaValor;
+        private float taValor;
+        private const string na = "N/A";
 
         // Proporção do distanciamento entre botões no eixo X
         private const float xProporcao = 7f;
 
         // Distancia entre botões no eixo Y
-        private const float yDistancia = 60f;
+        private const float yDistancia = 70f;
 
-        /* Enumeração de todas as ações do menu */
-        public enum Acao
-        {
-            Nenhum,
-            IndicarEntidade,
-            NovoMundo,
-            Salvar,
-            Carregar,
-            AdicionarObjeto,
-            ExcluirObjeto,
-            GerenciarConexao,
-            GerenciarPropriedades,
-            GerenciarDialogos,
-            GerenciarEventos,
-            GerenciarMusicas,
+        // Indica se o menu de propriedades deve ser mostrado
+        private bool menuPropriedadesAtivo;
 
-            /*AumentarTempoInicio,
-            ReduzirTempoInicio,
-            AumentarTempoAtivo,
-            ReduzirTempoAtivo,
-            AumentarTempoEntreAtivacoes,
-            ReduzirTempoEntreAtivacoes,*/
-        }
+        // Indica se a cor de um botão no menu de propriedades pode ser apagado
+        private bool botaoDesenhado;
 
-        /* Classe aninhada para um botão */
-        class Botao
-        {
-            private Texture textura;
-            public Sprite BSprite { get; private set; }
-            public Acao BAcao { get; private set; }
-            public int EntidadeID { get; private set; }
-            public Vector2f Dimensoes { get; private set; }
+        // Contador para permitir o botão ficar desenhado por um certo tempo até apagar
+        private int contBotaoAux;
 
-            private const float PROPORCAO = .35f;
+        // Botao para o menu de entidades
+        private Botao menuEntidades;
 
-            public Botao(Vector2f posicao, string pathTextura, Acao acao, int entidadeID)
-            {
-                Dimensoes = new Vector2f();
+        // Proporção dos botões do menu para redimensionamento
+        private const float PROPORCAO_BOTOES = .35f;
 
-                try
-                {
-                    textura = new Texture(pathTextura);
-                    textura.Smooth = true;
-                    BSprite = new Sprite(textura);
-                    BSprite.Scale = new Vector2f(PROPORCAO, PROPORCAO);
-                    Vector2f dim = new Vector2f(textura.Size.X * PROPORCAO, textura.Size.Y * PROPORCAO);
-                    Dimensoes = dim;
-                }
-                catch(Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    Environment.Exit(0);
-                }
-
-                BSprite.Origin = new Vector2f(BSprite.Texture.Size.X / 2, BSprite.Texture.Size.Y / 2);
-                BAcao = acao;
-                BSprite.Position = posicao;
-                EntidadeID = entidadeID;
-            }
-
-            public void AtualizarPosicao(float x, float y)
-            {
-                /* Atualiza as coordenadas do botão na tela */
-                Vector2f pos = new Vector2f();
-                pos.X = BSprite.Position.X + x;
-                pos.Y = BSprite.Position.Y + y;
-                BSprite.Position = pos;
-            }
-        }
+        // Proporção do menu de entidades para redimensionamento
+        private const float PROPORCAO_ENTIDADES = 4f;
 
         public Menu(Vector2f windowSize, View view)
         {
@@ -156,25 +123,24 @@ namespace AlvericsQuestEditor
                                                view.Center.Y - windowSize.Y / 2f);
 
             // Inicializa os botões
-            bNovoMundo = new Botao(GetPosicaoBotao(windowSize, view, -1, 1), @"MenuIcons\new.png", Acao.NovoMundo, -1);
-            bSalvar = new Botao(GetPosicaoBotao(windowSize, view, 0, 1), @"MenuIcons\save.png", Acao.Salvar, -1);
-            bCarregar = new Botao(GetPosicaoBotao(windowSize, view, 1, 1), @"MenuIcons\archive.png", Acao.Carregar, -1) ;
-            bAdicionarObjeto = new Botao(GetPosicaoBotao(windowSize, view, -3, 2), @"MenuIcons\pencil.png", Acao.AdicionarObjeto, -1);
-            bExcluirObjeto = new Botao(GetPosicaoBotao(windowSize, view, -2, 2), @"MenuIcons\eraser.png", Acao.ExcluirObjeto, -1);
-            bConexao = new Botao(GetPosicaoBotao(windowSize, view, -1, 2), @"MenuIcons\magnet.png", Acao.GerenciarConexao, -1);
-            bPropriedades = new Botao(GetPosicaoBotao(windowSize, view, 0, 2), @"MenuIcons\proprieties.png", Acao.GerenciarPropriedades, -1);
-            bDialogos = new Botao(GetPosicaoBotao(windowSize, view, 1, 2), @"MenuIcons\dialog.png", Acao.GerenciarDialogos, -1);
-            bEventos = new Botao(GetPosicaoBotao(windowSize, view, 2, 2), @"MenuIcons\event.png", Acao.GerenciarEventos, -1);
-            bMusicas = new Botao(GetPosicaoBotao(windowSize, view, 3, 2), @"MenuIcons\music.png", Acao.GerenciarMusicas, -1);
+            bNovoMundo = new Botao(GetPosicaoBotao(windowSize, view, -1, 1), @"MenuIcons\new.png", Acao.NovoMundo, PROPORCAO_BOTOES);
+            bSalvar = new Botao(GetPosicaoBotao(windowSize, view, 0, 1), @"MenuIcons\save.png", Acao.Salvar, PROPORCAO_BOTOES);
+            bCarregar = new Botao(GetPosicaoBotao(windowSize, view, 1, 1), @"MenuIcons\archive.png", Acao.Carregar, PROPORCAO_BOTOES) ;
+            bAdicionarObjeto = new Botao(GetPosicaoBotao(windowSize, view, -3, 2), @"MenuIcons\pencil.png", Acao.AdicionarObjeto, PROPORCAO_BOTOES);
+            bExcluirObjeto = new Botao(GetPosicaoBotao(windowSize, view, -2, 2), @"MenuIcons\eraser.png", Acao.ExcluirObjeto, PROPORCAO_BOTOES);
+            bConexao = new Botao(GetPosicaoBotao(windowSize, view, -1, 2), @"MenuIcons\magnet.png", Acao.GerenciarConexao, PROPORCAO_BOTOES);
+            bPropriedades = new Botao(GetPosicaoBotao(windowSize, view, 0, 2), @"MenuIcons\proprieties.png", Acao.GerenciarPropriedades, PROPORCAO_BOTOES);
+            bDialogos = new Botao(GetPosicaoBotao(windowSize, view, 1, 2), @"MenuIcons\dialog.png", Acao.GerenciarDialogos, PROPORCAO_BOTOES);
+            bEventos = new Botao(GetPosicaoBotao(windowSize, view, 2, 2), @"MenuIcons\event.png", Acao.GerenciarEventos, PROPORCAO_BOTOES);
+            bMusicas = new Botao(GetPosicaoBotao(windowSize, view, 3, 2), @"MenuIcons\music.png", Acao.GerenciarMusicas, PROPORCAO_BOTOES);
 
-
-
-            /*bInicioAtivacaoSoma = new Botao(GetPosicaoBotao(windowSize, view, 1, 3), @"MenuIcons\right.png", Acao.GerenciarConexao, -1);
-            bInicioAtivacaoSub = new Botao(GetPosicaoBotao(windowSize, view, -1, 3), @"MenuIcons\left.png", Acao.GerenciarConexao, -1);
-            bTempoAtivadoSoma = new Botao(GetPosicaoBotao(windowSize, view, 1, 4), @"MenuIcons\right.png", Acao.GerenciarConexao, -1);
-            bTempoAtivadoSub = new Botao(GetPosicaoBotao(windowSize, view, -1, 4), @"MenuIcons\left.png", Acao.GerenciarConexao, -1);
-            bTempoEntreAtivacoesSoma = new Botao(GetPosicaoBotao(windowSize, view, 1, 5), @"MenuIcons\right.png", Acao.GerenciarConexao, -1);
-            bTempoEntreAtivacoesSub = new Botao(GetPosicaoBotao(windowSize, view, -1, 5), @"MenuIcons\left.png", Acao.GerenciarConexao, -1);*/
+            // Inicializa os botões do menu de propriedades
+            bInicioAtivacaoSoma = new Botao(GetPosicaoBotao(windowSize, view, 1, 4), @"MenuIcons\right.png", Acao.AumentarTempoInicio, PROPORCAO_BOTOES);
+            bInicioAtivacaoSub = new Botao(GetPosicaoBotao(windowSize, view, -1, 4), @"MenuIcons\left.png", Acao.ReduzirTempoInicio, PROPORCAO_BOTOES);
+            bTempoAtivadoSoma = new Botao(GetPosicaoBotao(windowSize, view, 1, 5), @"MenuIcons\right.png", Acao.AumentarTempoEntreAtivacoes, PROPORCAO_BOTOES);
+            bTempoAtivadoSub = new Botao(GetPosicaoBotao(windowSize, view, -1, 5), @"MenuIcons\left.png", Acao.ReduzirTempoEntreAtivacoes, PROPORCAO_BOTOES);
+            bTempoEntreAtivacoesSoma = new Botao(GetPosicaoBotao(windowSize, view, 1, 6), @"MenuIcons\right.png", Acao.AumentarTempoAtivo, PROPORCAO_BOTOES);
+            bTempoEntreAtivacoesSub = new Botao(GetPosicaoBotao(windowSize, view, -1, 6), @"MenuIcons\left.png", Acao.ReduzirTempoAtivo, PROPORCAO_BOTOES);
 
             // Preenche a lista de botões
             botoes = new List<Botao>() 
@@ -190,6 +156,72 @@ namespace AlvericsQuestEditor
                 bEventos,
                 bMusicas,
             };
+
+            // Preenche a lista de botões de propriedades
+            botoesPropriedades = new List<Botao>()
+            {
+                bInicioAtivacaoSoma,
+                bInicioAtivacaoSub,
+                bTempoEntreAtivacoesSoma,
+                bTempoEntreAtivacoesSub,
+                bTempoAtivadoSoma,
+                bTempoAtivadoSub,
+            };
+
+            menuPropriedadesAtivo = false;
+
+            try
+            {
+                fonte = new Font(@"arial.ttf");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Environment.Exit(0);
+            }
+
+            tempoInicial = new Text("Inicio", fonte);
+            tempoEntreAtivacoes = new Text("Entre Ativações", fonte);
+            tempoAtivado = new Text("Ativado", fonte);
+            tiValorT = new Text(na, fonte);
+            teaValorT = new Text(na, fonte);
+            taValorT = new Text(na, fonte);
+
+            labels = new List<Text>()
+            {
+                tempoInicial,
+                tiValorT,
+                tempoEntreAtivacoes,
+                teaValorT,
+                tempoAtivado,
+                taValorT,
+            };
+
+            float auxY = view.Center.Y - windowSize.Y / 2 + 3.5f * yDistancia;
+            float auxX = view.Center.X;
+
+            foreach (Text label in labels)
+            {
+                label.CharacterSize = 15;
+                label.FillColor = Color.White;
+                label.Position = new Vector2f(auxX, auxY);
+                auxY += yDistancia / 2;
+            }
+
+            AtualizarOriginLabels();
+
+            tempoInicial.Style = Text.Styles.Italic;
+            tempoEntreAtivacoes.Style = Text.Styles.Italic;
+            tempoAtivado.Style = Text.Styles.Italic;
+
+            botaoDesenhado = false;
+            contBotaoAux = 0;
+
+            taValor = 0;
+            teaValor = 0;
+            tiValor = 0;
+
+            menuEntidades = new Botao(GetPosicaoBotao(windowSize, view, 0, 5), @"teste.png", Acao.IndicarEntidade, PROPORCAO_ENTIDADES);
         }
 
         /* Dado uma linha e uma coluna, retorna as coordenadas de um botão */
@@ -224,21 +256,95 @@ namespace AlvericsQuestEditor
                 {
                     ResetarCorBotoes();
                     botao.BSprite.Color = new Color(50, 70, 90);
+
+                    if (botao.BAcao == Acao.GerenciarPropriedades)
+                        menuPropriedadesAtivo = true;
+                    else
+                        menuPropriedadesAtivo = false;
+
                     return botao.BAcao;
                 } 
+            }
+
+            if (menuPropriedadesAtivo)
+            {
+                foreach(Botao botao in botoesPropriedades)
+                {
+                    bCoord = window.MapCoordsToPixel(botao.BSprite.Position);
+                    bCoord.X -= (int)(botao.Dimensoes.X / 2);
+                    bCoord.Y -= (int)(botao.Dimensoes.Y / 2);
+                    bComprimento = bCoord.X + botao.Dimensoes.X;
+                    bAltura = bCoord.Y + botao.Dimensoes.Y;
+
+                    if (mousePos.X >= bCoord.X && mousePos.X <= bComprimento &&
+                        mousePos.Y >= bCoord.Y && mousePos.Y <= bAltura)
+                    {
+                        ResetarCorBotoesPropriedades();
+                        botao.BSprite.Color = new Color(50, 70, 90);
+                        botaoDesenhado = true;
+                        AtualizarValores(botao.BAcao);
+                        return botao.BAcao;
+                    }
+                }
             }
 
             // Caso nenhum botão tenha sido pressionado, retorna a acao Nenhum
             return Acao.Nenhum;
         }
 
+        private void AtualizarValores(Acao a)
+        {
+            if(a == Acao.AumentarTempoInicio)
+            {
+                tiValor += 0.5f;
+                tiValorT.DisplayedString = tiValor.ToString(); 
+            }
+            else if (a == Acao.ReduzirTempoInicio && tiValor > 0)
+            {
+                tiValor -= 0.5f;
+                tiValorT.DisplayedString = tiValor.ToString();
+            }
+            else if (a == Acao.AumentarTempoEntreAtivacoes)
+            {
+                teaValor += 0.5f;
+                teaValorT.DisplayedString = teaValor.ToString();
+            }
+            else if (a == Acao.ReduzirTempoEntreAtivacoes && teaValor > 0)
+            {
+                teaValor -= 0.5f;
+                teaValorT.DisplayedString = teaValor.ToString();
+            }
+            else if (a == Acao.AumentarTempoAtivo)
+            {
+                taValor += 0.5f;
+                taValorT.DisplayedString = taValor.ToString();
+            }
+            else if (a == Acao.ReduzirTempoAtivo && taValor > 0)
+            {
+                taValor -= 0.5f;
+                taValorT.DisplayedString = taValor.ToString();
+            }
+
+            AtualizarOriginLabels();
+        }
+
         /* Reseta a cor de todos os botões, originalmente brancos */
         public void ResetarCorBotoes()
         {
             foreach (Botao botao in botoes)
-            {
                 botao.BSprite.Color = Color.White;
-            }
+        }
+
+        public void ResetarCorBotoesPropriedades()
+        {
+            foreach (Botao botao in botoesPropriedades)
+                botao.BSprite.Color = Color.White;
+        }
+
+        public void AtualizarPosicaoBackground(float y)
+        {
+            Vector2f aux = new Vector2f(background.Position.X, background.Position.Y + y);
+            background.Position = aux;
         }
 
         /* Desenha todos os elementos do menu na tela */
@@ -249,8 +355,30 @@ namespace AlvericsQuestEditor
             foreach (Botao botao in botoes)
                 window.Draw(botao.BSprite);
 
-            /*foreach (Text label in labels)
-                window.Draw(label);*/
+            if (menuPropriedadesAtivo)
+            {
+                foreach (Botao botao in botoesPropriedades)
+                    window.Draw(botao.BSprite);
+
+                foreach (Text label in labels)
+                    window.Draw(label);
+
+                if (botaoDesenhado)
+                {
+                    contBotaoAux++;
+
+                    if (contBotaoAux >= 200)
+                    {
+                        ResetarCorBotoesPropriedades();
+                        botaoDesenhado = false;
+                        contBotaoAux = 0;
+                    } 
+                }
+            }
+            else
+            {
+                window.Draw(menuEntidades.BSprite);
+            }
         }
 
         /* Quando a janela for redimensionada, todos os elementos são atualizados */
@@ -273,13 +401,75 @@ namespace AlvericsQuestEditor
             bEventos.BSprite.Position = GetPosicaoBotao(windowSize, view, 2, 2);
             bMusicas.BSprite.Position = GetPosicaoBotao(windowSize, view, 3, 2);
 
+            // Determina a nova posição dos botões do menu de propriedades
+            bInicioAtivacaoSoma.BSprite.Position = GetPosicaoBotao(windowSize, view, 1, 4);
+            bInicioAtivacaoSub.BSprite.Position = GetPosicaoBotao(windowSize, view, -1, 4);
+            bTempoAtivadoSoma.BSprite.Position = GetPosicaoBotao(windowSize, view, 1, 5);
+            bTempoAtivadoSub.BSprite.Position = GetPosicaoBotao(windowSize, view, -1, 5);
+            bTempoEntreAtivacoesSoma.BSprite.Position = GetPosicaoBotao(windowSize, view, 1, 6);
+            bTempoEntreAtivacoesSub.BSprite.Position = GetPosicaoBotao(windowSize, view, -1, 6);
 
-            /*bInicioAtivacaoSoma.BSprite.Position = GetPosicaoBotao(windowSize, view, 1, 3);
-            bInicioAtivacaoSub.BSprite.Position = GetPosicaoBotao(windowSize, view, -1, 3);
-            bTempoAtivadoSoma.BSprite.Position = GetPosicaoBotao(windowSize, view, 1, 4);
-            bTempoAtivadoSub.BSprite.Position = GetPosicaoBotao(windowSize, view, -1, 4);
-            bTempoEntreAtivacoesSoma.BSprite.Position = GetPosicaoBotao(windowSize, view, 1, 5);
-            bTempoEntreAtivacoesSub.BSprite.Position = GetPosicaoBotao(windowSize, view, -1, 5);*/
+            // Determinar a nova posição dos botões do menu de entidades
+            menuEntidades.BSprite.Position = GetPosicaoBotao(windowSize, view, 0, 5);
+
+            // Determina a nova posição dos labels do menu de propriedades
+            float auxY = view.Center.Y - windowSize.Y / 2 + 3.5f * yDistancia;
+            float auxX = view.Center.X;
+
+            foreach (Text label in labels)
+            {
+                label.FillColor = Color.White;
+                label.Position = new Vector2f(auxX, auxY);
+                auxY += yDistancia / 2;
+                FloatRect auxVec = label.GetLocalBounds();
+                label.Origin = new Vector2f(auxVec.Left + auxVec.Width / 2, auxVec.Top + auxVec.Height / 2);
+            }
+        }
+        private void AtualizarOriginLabels()
+        {
+            foreach (Text label in labels)
+            {
+                FloatRect auxVec = label.GetLocalBounds();
+                label.Origin = new Vector2f(auxVec.Left + auxVec.Width / 2, auxVec.Top + auxVec.Height / 2);
+            }
+        }
+
+        /* Classe aninhada para um botão */
+        class Botao
+        {
+            private Texture textura;
+            public Sprite BSprite { get; private set; }
+            public Acao BAcao { get; private set; }
+            public int Entidade { get; private set; }
+            public Vector2f Dimensoes { get; private set; }
+
+            public Botao(Vector2f posicao, string pathTextura, Acao acao, float proporcao)
+            {
+                Dimensoes = new Vector2f();
+
+                try
+                {
+                    textura = new Texture(pathTextura);
+
+                    if(acao != Acao.IndicarEntidade)
+                        textura.Smooth = true;
+
+                    BSprite = new Sprite(textura);
+                    BSprite.Scale = new Vector2f(proporcao, proporcao);
+                    Vector2f dim = new Vector2f(textura.Size.X * proporcao, textura.Size.Y * proporcao);
+                    Dimensoes = dim;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Environment.Exit(0);
+                }
+
+                BSprite.Origin = new Vector2f(BSprite.Texture.Size.X / 2, BSprite.Texture.Size.Y / 2);
+                BAcao = acao;
+                BSprite.Position = posicao;
+                //Entidade = entidade;
+            }
         }
     }
 }

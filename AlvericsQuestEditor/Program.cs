@@ -23,6 +23,11 @@ namespace AlvericsQuestEditor
         private Menu menu;
         private const uint comprimentoInicialTela = 1600;
         private const uint alturaInicialTela = 900;
+        private float deltatime;
+        private Clock clock;
+        private const float velViewMenu = 50000f;
+        private Vector2f coordViewMenu;
+
         public Editor()
         {
             // Inicializa a janela do programa
@@ -56,6 +61,11 @@ namespace AlvericsQuestEditor
                 Environment.Exit(0);
             }
 
+            deltatime = 0;
+            clock = new Clock();
+
+            coordViewMenu = viewMenu.Center;
+
             /* Inclui um método para os event handlers: */
             // Método chamado quando ó botão de finalizar o programa é pressionado
             window.Closed += Window_Close;
@@ -65,12 +75,18 @@ namespace AlvericsQuestEditor
 
             // Método chamado quando um botão do mouse é pressionado
             window.MouseButtonPressed += Window_MouseButtonPressed;
+
+            // Método chamado quando a roda do mouse é usada
+            window.MouseWheelScrolled += Window_MouseWheelScrolled;
         }
 
         public void Executar()
         {
             while (window.IsOpen)
             {
+                // Atualza o valor do deltatime entre dois frames
+                deltatime = clock.Restart().AsSeconds();
+
                 // Trata os eventos da janela
                 window.DispatchEvents();
 
@@ -89,9 +105,11 @@ namespace AlvericsQuestEditor
         /* Método chamado quando a tela é redimensionada */
         private void Window_Resized(object sender, EventArgs e)
         {
+
             // Redimensionar menu
             viewMenu.Size = new Vector2f(window.Size.X * 0.3f, window.Size.Y);
             menu.RedimensionarMenu((Vector2f)window.Size, viewMenu);
+            
         }
 
         /* Método chamado quando o botão 'fechar janela' é pressionado */
@@ -107,6 +125,32 @@ namespace AlvericsQuestEditor
             if (e.Button == Mouse.Button.Left)
             {
                 menu.BotaoPressionado(window, Mouse.GetPosition(window));
+            }
+        }
+
+        private void Window_MouseWheelScrolled(object sender, MouseWheelScrollEventArgs e)
+        {
+            // Caso seja ativado no menu
+            if(Mouse.GetPosition(window).X >= window.Size.X * 0.7f)
+            {
+                if (e.Delta > 0)
+                {
+                    coordViewMenu.Y -= velViewMenu * deltatime;
+                    viewMenu.Center = coordViewMenu;
+                    menu.AtualizarPosicaoBackground(-velViewMenu * deltatime);
+                }
+                else if (e.Delta < 0)
+                {
+                    coordViewMenu.Y += velViewMenu * deltatime;
+                    viewMenu.Center = coordViewMenu;
+                    menu.AtualizarPosicaoBackground(velViewMenu * deltatime);
+                }
+            }
+
+            // Caso seja ativado no mundo
+            else
+            {
+                
             }
         }
     }
