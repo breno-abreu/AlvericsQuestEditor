@@ -124,7 +124,10 @@ namespace AlvericsQuestEditor
         {
             if (e.Button == Mouse.Button.Left)
             {
-                menu.BotaoPressionado(window, Mouse.GetPosition(window));
+                if(menu.BotaoPressionado(window, Mouse.GetPosition(window)) == Acao.IndicarEntidade)
+                {
+                    Console.WriteLine(menu.posicaoEntidade);
+                }
             }
         }
 

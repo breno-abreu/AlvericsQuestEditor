@@ -114,6 +114,12 @@ namespace AlvericsQuestEditor
         // Proporção do menu de entidades para redimensionamento
         private const float PROPORCAO_ENTIDADES = 4f;
 
+        // Quantidade de linhas e colunas do menu de entidades
+        private Vector2i quantidadeMenuEntidade;
+
+        // Contém a posição de uma entidade no menu de entidades
+        public Vector2i posicaoEntidade { get; private set; }
+
         public Menu(Vector2f windowSize, View view)
         {
             // Inicializa o background
@@ -221,6 +227,9 @@ namespace AlvericsQuestEditor
             teaValor = 0;
             tiValor = 0;
 
+            quantidadeMenuEntidade = new Vector2i(5, 3);
+            posicaoEntidade = new Vector2i();
+
             menuEntidades = new Botao(GetPosicaoBotao(windowSize, view, 0, 5), @"teste.png", Acao.IndicarEntidade, PROPORCAO_ENTIDADES);
         }
 
@@ -285,6 +294,24 @@ namespace AlvericsQuestEditor
                         AtualizarValores(botao.BAcao);
                         return botao.BAcao;
                     }
+                }
+            }
+            else
+            {
+                // Localiza em qual linha e qual coluna do menu de entidades o mouse foi pressionado
+                bCoord = window.MapCoordsToPixel(menuEntidades.BSprite.Position);
+                bCoord.X -= (int)(menuEntidades.Dimensoes.X / 2);
+                bCoord.Y -= (int)(menuEntidades.Dimensoes.Y / 2);
+                bComprimento = bCoord.X + menuEntidades.Dimensoes.X;
+                bAltura = bCoord.Y + menuEntidades.Dimensoes.Y;
+
+                if (mousePos.X >= bCoord.X && mousePos.X <= bComprimento &&
+                        mousePos.Y >= bCoord.Y && mousePos.Y <= bAltura)
+                {
+                    int x = (int)((mousePos.X - bCoord.X) / (menuEntidades.Dimensoes.X / quantidadeMenuEntidade.X));
+                    int y = (int)((mousePos.Y - bCoord.Y) / (menuEntidades.Dimensoes.Y / quantidadeMenuEntidade.Y));
+                    posicaoEntidade = new Vector2i(x, y);
+                    return menuEntidades.BAcao;
                 }
             }
 
