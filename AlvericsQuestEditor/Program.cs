@@ -47,7 +47,7 @@ namespace AlvericsQuestEditor
             viewMenu.Size = new Vector2f(window.Size.X * 0.3f, window.Size.Y);
 
             // Inicializa o menu
-            menu = new Menu((Vector2f)window.Size, viewMenu);
+            menu = new Menu(window, viewMenu);
 
             // Tenta carregar o ícone da janela, caso não consigo o programa é finalizado
             try
@@ -92,7 +92,7 @@ namespace AlvericsQuestEditor
 
                 // Muda para a viewMenu e desenha o menu na tela
                 window.SetView(viewMenu);
-                menu.Desenhar(window);
+                menu.Desenhar();
 
                 // Executa a janela
                 window.Display();
@@ -108,7 +108,7 @@ namespace AlvericsQuestEditor
 
             // Redimensionar menu
             viewMenu.Size = new Vector2f(window.Size.X * 0.3f, window.Size.Y);
-            menu.RedimensionarMenu((Vector2f)window.Size, viewMenu);
+            menu.RedimensionarMenu();
             
         }
 
@@ -124,9 +124,9 @@ namespace AlvericsQuestEditor
         {
             if (e.Button == Mouse.Button.Left)
             {
-                if(menu.BotaoPressionado(window, Mouse.GetPosition(window)) == Acao.IndicarEntidade)
+                if(menu.BotaoPressionado(Mouse.GetPosition(window)) == Acao.IndicarEntidade)
                 {
-                    Console.WriteLine(menu.posicaoEntidade);
+                    //Console.WriteLine(menu.posicaoEntidade);
                 }
             }
         }
