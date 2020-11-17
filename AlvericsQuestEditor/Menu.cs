@@ -109,9 +109,6 @@ namespace AlvericsQuestEditor
         // Proporção do menu de entidades para redimensionamento
         private const float PROPORCAO_ENTIDADES = 4f;
 
-        // Quantidade de linhas e colunas do menu de entidades
-        private Vector2i quantidadeMenuEntidade;
-
         // Contém a posição de uma entidade no menu de entidades
         public Vector2i posicaoEntidade { get; private set; }
 
@@ -198,10 +195,7 @@ namespace AlvericsQuestEditor
 
             // Cria um botão para o menu entidade. A entidade escolhida será determinada através da posição do mouse dentro da imagem, 
             // por isso existe apenas um botão para todas as entidades do mundo no menu
-            menuEntidades = new Botao(GetPosicaoBotao(0, 5), @"teste.png", Acao.IndicarEntidade, PROPORCAO_ENTIDADES);
-
-            // Define a quantidade de entidades por linha e por coluna do menu de entidades
-            quantidadeMenuEntidade = new Vector2i(5, 3);
+            menuEntidades = new Botao(GetPosicaoBotao(0, 5), Informacoes.entidadesImgPath, Acao.IndicarEntidade, PROPORCAO_ENTIDADES);
 
             posicaoEntidade = new Vector2i();
         }
@@ -369,8 +363,8 @@ namespace AlvericsQuestEditor
                 if (mousePos.X >= bCoord.X && mousePos.X <= bComprimento &&
                         mousePos.Y >= bCoord.Y && mousePos.Y <= bAltura)
                 {
-                    int x = (int)((mousePos.X - bCoord.X) / (menuEntidades.Dimensoes.X / quantidadeMenuEntidade.X));
-                    int y = (int)((mousePos.Y - bCoord.Y) / (menuEntidades.Dimensoes.Y / quantidadeMenuEntidade.Y));
+                    int x = (int)((mousePos.X - bCoord.X) / (menuEntidades.Dimensoes.X / Informacoes.qtdEntidades.X));
+                    int y = (int)((mousePos.Y - bCoord.Y) / (menuEntidades.Dimensoes.Y / Informacoes.qtdEntidades.Y));
                     posicaoEntidade = new Vector2i(x, y);
                     return menuEntidades.BAcao;
                 }
@@ -481,7 +475,7 @@ namespace AlvericsQuestEditor
             }
         }
 
-        public void RedimensionarMenu()
+        public void Redimensionar()
         {
             /* Quando a janela for redimensionada, todos os elementos são atualizados */
             RedimensionarBackground();

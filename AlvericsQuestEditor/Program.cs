@@ -6,6 +6,14 @@ using SFML.Window;
 
 namespace AlvericsQuestEditor
 {
+    public static class Informacoes
+    {
+        public static Vector2i qtdEntidades = new Vector2i(5, 3);
+        public static string entidadesImgPath = @"teste.png";
+        public static float propViewMenu = .3f;
+        public static float propViewMundo = .7f;
+    }
+
     class Program
     {
         static void Main(string[] args)
@@ -27,6 +35,8 @@ namespace AlvericsQuestEditor
         private Clock clock;
         private const float velViewMenu = 50000f;
         private Vector2f coordViewMenu;
+        private Mundo mundo;
+        private int zoom;
 
         public Editor()
         {
@@ -37,17 +47,14 @@ namespace AlvericsQuestEditor
             // Cria uma view para o mundo
             viewMundo = new View();
             // Seleciona a fração da tela ocupada por essa view
-            viewMundo.Viewport = new FloatRect(0f, 0f, 0.7f, 1f);
-            viewMundo.Size = new Vector2f(window.Size.X * 0.7f, window.Size.Y);
+            viewMundo.Viewport = new FloatRect(0f, 0f, Informacoes.propViewMundo, 1f);
+            viewMundo.Size = new Vector2f(window.Size.X * Informacoes.propViewMundo, window.Size.Y);
 
             // Cria uma view para o menu
             viewMenu = new View();
             // Seleciona a fração da tela ocupada por essa view
-            viewMenu.Viewport = new FloatRect(0.7f, 0f, 0.3f, 1f);
-            viewMenu.Size = new Vector2f(window.Size.X * 0.3f, window.Size.Y);
-
-            // Inicializa o menu
-            menu = new Menu(window, viewMenu);
+            viewMenu.Viewport = new FloatRect(Informacoes.propViewMundo, 0f, Informacoes.propViewMenu, 1f);
+            viewMenu.Size = new Vector2f(window.Size.X * Informacoes.propViewMenu, window.Size.Y);
 
             // Tenta carregar o ícone da janela, caso não consigo o programa é finalizado
             try
@@ -60,6 +67,16 @@ namespace AlvericsQuestEditor
                 Console.WriteLine(ex.Message);
                 Environment.Exit(0);
             }
+
+            // Inicializa o menu
+            menu = new Menu(window, viewMenu);
+
+            mundo = new Mundo(window, viewMundo);
+
+            zoom = 10;
+
+            AplicarZoomMundo();
+
 
             deltatime = 0;
             clock = new Clock();
@@ -90,6 +107,10 @@ namespace AlvericsQuestEditor
                 // Trata os eventos da janela
                 window.DispatchEvents();
 
+                window.SetView(viewMundo);
+                mundo.Desenhar();
+                mundo.Mover(deltatime, -zoom);
+
                 // Muda para a viewMenu e desenha o menu na tela
                 window.SetView(viewMenu);
                 menu.Desenhar();
@@ -105,11 +126,12 @@ namespace AlvericsQuestEditor
         /* Método chamado quando a tela é redimensionada */
         private void Window_Resized(object sender, EventArgs e)
         {
-
             // Redimensionar menu
-            viewMenu.Size = new Vector2f(window.Size.X * 0.3f, window.Size.Y);
-            menu.RedimensionarMenu();
-            
+            viewMenu.Size = new Vector2f(window.Size.X * Informacoes.propViewMenu, window.Size.Y);
+            menu.Redimensionar();
+
+            viewMundo.Size = new Vector2f(window.Size.X * Informacoes.propViewMundo, window.Size.Y);
+            AplicarZoomMundo();
         }
 
         /* Método chamado quando o botão 'fechar janela' é pressionado */
@@ -134,7 +156,7 @@ namespace AlvericsQuestEditor
         private void Window_MouseWheelScrolled(object sender, MouseWheelScrollEventArgs e)
         {
             // Caso seja ativado no menu
-            if(Mouse.GetPosition(window).X >= window.Size.X * 0.7f)
+            if(Mouse.GetPosition(window).X >= window.Size.X * Informacoes.propViewMundo)
             {
                 if (e.Delta > 0)
                 {
@@ -153,7 +175,33 @@ namespace AlvericsQuestEditor
             // Caso seja ativado no mundo
             else
             {
-                
+                if (e.Delta > 0)
+                {
+                    viewMundo.Zoom(0.9f);
+                    zoom++;
+                }
+                    
+
+                else if (e.Delta < 0)
+                {
+                    viewMundo.Zoom(1.1f);
+                    zoom--;
+                }
+                    
+            }
+        }
+
+        private void AplicarZoomMundo()
+        {
+            if (zoom > 0)
+            {
+                for (int i = 0; i < zoom; i++)
+                    viewMundo.Zoom(0.9f);
+            }
+            else if (zoom < 0)
+            {
+                for (int i = 0; i < -zoom; i++)
+                    viewMundo.Zoom(1.1f);
             }
         }
     }
