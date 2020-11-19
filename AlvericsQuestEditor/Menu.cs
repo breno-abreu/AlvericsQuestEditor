@@ -110,7 +110,7 @@ namespace AlvericsQuestEditor
         private const float PROPORCAO_ENTIDADES = 4f;
 
         // Contém a posição de uma entidade no menu de entidades
-        public Vector2i posicaoEntidade { get; private set; }
+        public Vector2i PosicaoEntidade { get; private set; }
 
         // Referência para a jenela do programa
         private RenderWindow window;
@@ -144,24 +144,24 @@ namespace AlvericsQuestEditor
             /* Inicializa todos os botões, que possuem uma posição, ícone, uma ação e a proporção para o redimensionamento da imagem do ícone */
 
             // Inicializa os botões principais
-            bNovoMundo = new Botao(GetPosicaoBotao(-1, 1), @"MenuIcons\new.png", Acao.NovoMundo, PROPORCAO_BOTOES);
-            bSalvar = new Botao(GetPosicaoBotao( 0, 1), @"MenuIcons\save.png", Acao.Salvar, PROPORCAO_BOTOES);
-            bCarregar = new Botao(GetPosicaoBotao(1, 1), @"MenuIcons\archive.png", Acao.Carregar, PROPORCAO_BOTOES);
-            bAdicionarObjeto = new Botao(GetPosicaoBotao(-3, 2), @"MenuIcons\pencil.png", Acao.AdicionarObjeto, PROPORCAO_BOTOES);
-            bExcluirObjeto = new Botao(GetPosicaoBotao(-2, 2), @"MenuIcons\eraser.png", Acao.ExcluirObjeto, PROPORCAO_BOTOES);
-            bConexao = new Botao(GetPosicaoBotao(-1, 2), @"MenuIcons\magnet.png", Acao.GerenciarConexao, PROPORCAO_BOTOES);
-            bPropriedades = new Botao(GetPosicaoBotao(0, 2), @"MenuIcons\proprieties.png", Acao.GerenciarPropriedades, PROPORCAO_BOTOES);
-            bDialogos = new Botao(GetPosicaoBotao(1, 2), @"MenuIcons\dialog.png", Acao.GerenciarDialogos, PROPORCAO_BOTOES);
-            bEventos = new Botao(GetPosicaoBotao(2, 2), @"MenuIcons\event.png", Acao.GerenciarEventos, PROPORCAO_BOTOES);
-            bMusicas = new Botao(GetPosicaoBotao(3, 2), @"MenuIcons\music.png", Acao.GerenciarMusicas, PROPORCAO_BOTOES);
+            bNovoMundo = new Botao(GetPosicaoBotao(-1, 1), @"MenuIcons\new.png", Acao.NovoMundo);
+            bSalvar = new Botao(GetPosicaoBotao( 0, 1), @"MenuIcons\save.png", Acao.Salvar);
+            bCarregar = new Botao(GetPosicaoBotao(1, 1), @"MenuIcons\archive.png", Acao.Carregar);
+            bAdicionarObjeto = new Botao(GetPosicaoBotao(-3, 2), @"MenuIcons\pencil.png", Acao.AdicionarObjeto);
+            bExcluirObjeto = new Botao(GetPosicaoBotao(-2, 2), @"MenuIcons\eraser.png", Acao.ExcluirObjeto);
+            bConexao = new Botao(GetPosicaoBotao(-1, 2), @"MenuIcons\magnet.png", Acao.GerenciarConexao);
+            bPropriedades = new Botao(GetPosicaoBotao(0, 2), @"MenuIcons\proprieties.png", Acao.GerenciarPropriedades);
+            bDialogos = new Botao(GetPosicaoBotao(1, 2), @"MenuIcons\dialog.png", Acao.GerenciarDialogos);
+            bEventos = new Botao(GetPosicaoBotao(2, 2), @"MenuIcons\event.png", Acao.GerenciarEventos);
+            bMusicas = new Botao(GetPosicaoBotao(3, 2), @"MenuIcons\music.png", Acao.GerenciarMusicas);
 
             // Inicializa os botões do menu de propriedades
-            bInicioAtivacaoSoma = new Botao(GetPosicaoBotao(1, 4), @"MenuIcons\right.png", Acao.AumentarTempoInicio, PROPORCAO_BOTOES);
-            bInicioAtivacaoSub = new Botao(GetPosicaoBotao(-1, 4), @"MenuIcons\left.png", Acao.ReduzirTempoInicio, PROPORCAO_BOTOES);
-            bTempoAtivadoSoma = new Botao(GetPosicaoBotao(1, 5), @"MenuIcons\right.png", Acao.AumentarTempoEntreAtivacoes, PROPORCAO_BOTOES);
-            bTempoAtivadoSub = new Botao(GetPosicaoBotao(-1, 5), @"MenuIcons\left.png", Acao.ReduzirTempoEntreAtivacoes, PROPORCAO_BOTOES);
-            bTempoEntreAtivacoesSoma = new Botao(GetPosicaoBotao(1, 6), @"MenuIcons\right.png", Acao.AumentarTempoAtivo, PROPORCAO_BOTOES);
-            bTempoEntreAtivacoesSub = new Botao(GetPosicaoBotao(-1, 6), @"MenuIcons\left.png", Acao.ReduzirTempoAtivo, PROPORCAO_BOTOES);
+            bInicioAtivacaoSoma = new Botao(GetPosicaoBotao(1, 4), @"MenuIcons\right.png", Acao.AumentarTempoInicio);
+            bInicioAtivacaoSub = new Botao(GetPosicaoBotao(-1, 4), @"MenuIcons\left.png", Acao.ReduzirTempoInicio);
+            bTempoAtivadoSoma = new Botao(GetPosicaoBotao(1, 5), @"MenuIcons\right.png", Acao.AumentarTempoEntreAtivacoes);
+            bTempoAtivadoSub = new Botao(GetPosicaoBotao(-1, 5), @"MenuIcons\left.png", Acao.ReduzirTempoEntreAtivacoes);
+            bTempoEntreAtivacoesSoma = new Botao(GetPosicaoBotao(1, 6), @"MenuIcons\right.png", Acao.AumentarTempoAtivo);
+            bTempoEntreAtivacoesSub = new Botao(GetPosicaoBotao(-1, 6), @"MenuIcons\left.png", Acao.ReduzirTempoAtivo);
 
             // Preenche a lista de botões principais
             botoes = new List<Botao>()
@@ -197,7 +197,7 @@ namespace AlvericsQuestEditor
             // por isso existe apenas um botão para todas as entidades do mundo no menu
             menuEntidades = new Botao(GetPosicaoBotao(0, 5), Informacoes.entidadesImgPath, Acao.IndicarEntidade, PROPORCAO_ENTIDADES);
 
-            posicaoEntidade = new Vector2i();
+            PosicaoEntidade = new Vector2i();
         }
 
         private void InicializarLabels()
@@ -365,7 +365,7 @@ namespace AlvericsQuestEditor
                 {
                     int x = (int)((mousePos.X - bCoord.X) / (menuEntidades.Dimensoes.X / Informacoes.qtdEntidades.X));
                     int y = (int)((mousePos.Y - bCoord.Y) / (menuEntidades.Dimensoes.Y / Informacoes.qtdEntidades.Y));
-                    posicaoEntidade = new Vector2i(x, y);
+                    PosicaoEntidade = new Vector2i(x, y);
                     return menuEntidades.BAcao;
                 }
             }
@@ -559,7 +559,7 @@ namespace AlvericsQuestEditor
             // Determina as dimensões de um botão
             public Vector2f Dimensoes { get; private set; }
 
-            public Botao(Vector2f posicao, string pathTextura, Acao acao, float proporcao)
+            public Botao(Vector2f posicao, string pathTextura, Acao acao, float proporcao=PROPORCAO_BOTOES)
             {
                 Dimensoes = new Vector2f();
 

@@ -23,6 +23,9 @@ namespace AlvericsQuestEditor
         // Sprite que recebe a textura principal
         private Sprite spritePrincipal;
 
+        // Variável auxiliar contendo o tipo de entidade que será criada
+        public Vector2i PosicaoEntidade { get; set; }
+
         /*// Indicador do atributo identificador de cada entidade, será incrementada a cada nova entidade criada,
         // Fazendo assim com que cada entidade tenha um identificador único
         private int idAux;*/
@@ -44,21 +47,34 @@ namespace AlvericsQuestEditor
                 Console.WriteLine(ex.Message);
                 Environment.Exit(0);
             }
+
+            PosicaoEntidade = new Vector2i();
         }
 
-        public void InserirEntidade(float x, float y, int coluna, int linha)
+        public void InserirEntidade(float x, float y)
         {
+            int auxX = x >= 0 ? 8 : -8;
+            int auxY = y >= 0 ? 8 : -8;
+
+            auxX = (int)(x / 16) * 16 + auxX;
+            auxY = (int)(y / 16) * 16 + auxY;
+
+            if (!HaEntidadeAqui(auxX, auxY))
+            {
             // Dimensões de um bloco na textura principal
             int comprimento = (int)(spritePrincipal.Texture.Size.X / Informacoes.qtdEntidades.X);
-            int altura = (int)(spritePrincipal.Texture.Size.Y / Informacoes.qtdEntidades.Y);
+                int altura = (int)(spritePrincipal.Texture.Size.Y / Informacoes.qtdEntidades.Y);
 
-            // Encontra e recorta na textura principal a nova textura da entidade baseada na coluna e na linha recebidas
-            IntRect rect = new IntRect(coluna * comprimento, linha * altura, comprimento, altura);
-            spritePrincipal.TextureRect = rect;
-            Sprite s = new Sprite(spritePrincipal);
-            s.Position = new Vector2f(x, y);
+                // Encontra e recorta na textura principal a nova textura da entidade baseada na coluna e na linha recebidas
+                IntRect rect = new IntRect(PosicaoEntidade.X * comprimento, PosicaoEntidade.Y * altura, comprimento, altura);
+                spritePrincipal.TextureRect = rect;
+                Sprite s = new Sprite(spritePrincipal);
+                s.Origin = new Vector2f(comprimento / 2, altura / 2);
 
-            entidades.AddLast(new Entidade(s));
+                s.Position = new Vector2f(auxX, auxY);
+
+                entidades.AddLast(new Entidade(s));
+            }
         }
 
         public void AtualizarEntidades()
@@ -70,6 +86,19 @@ namespace AlvericsQuestEditor
                 /*if (entidade.Excluir)
                     entidades.Remove(entidade);*/
             }
+        }
+
+        public int QuantidadeTotalEntidades()
+        {
+            return entidades.Count;
+        }
+
+        public bool HaEntidadeAqui(float x, float y)
+        {
+            foreach(Entidade entidade in entidades)
+                if (entidade.ESprite.Position.X == x && entidade.ESprite.Position.Y == y) return true;
+                
+            return false;
         }
     }
 }

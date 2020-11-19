@@ -16,52 +16,46 @@ namespace AlvericsQuestEditor
         private View view;
 
         // Referência para um gerenciador de entidades
-        private GerenciadorEntidades gerenciadorEntidades;
+        public GerenciadorEntidades GerenciadorEnt { get; private set; }
 
         // Velocidade de movimentacao do mundo
         private const float velocidade = 50f;
+
+        // Vetor auxiliar para operações de movimentação
+        private Vector2f auxVec;
 
         public Mundo(RenderWindow window, View view)
         {
             this.window = window;
             this.view = view;
-            gerenciadorEntidades = new GerenciadorEntidades(window, view);
+            GerenciadorEnt = new GerenciadorEntidades(window, view);
 
-            gerenciadorEntidades.InserirEntidade(10, 10, 0, 1);
-            gerenciadorEntidades.InserirEntidade(100, 10, 0, 1);
-            gerenciadorEntidades.InserirEntidade(50, 50, 0, 1);
-            gerenciadorEntidades.InserirEntidade(-50, -50, 0, 1);
+            auxVec = new Vector2f();
         }
 
         public void Desenhar()
         {
-            gerenciadorEntidades.AtualizarEntidades();
+            GerenciadorEnt.AtualizarEntidades();
         }
 
         public void Mover(float deltatime, int zoom)
         {
             int z = zoom > 10 ? 2 * zoom : 10;
+            float vel = velocidade * z * deltatime;
 
             if (Keyboard.IsKeyPressed(Keyboard.Key.W))
-            {
-                Vector2f aux = new Vector2f(view.Center.X, view.Center.Y - velocidade * z * deltatime);
-                view.Center = aux;
-            }
+                auxVec.Y = view.Center.Y - vel;
+
             else if (Keyboard.IsKeyPressed(Keyboard.Key.A))
-            {
-                Vector2f aux = new Vector2f(view.Center.X - velocidade *  z * deltatime, view.Center.Y);
-                view.Center = aux;
-            }
+                auxVec.X = view.Center.X - vel;
+
             else if (Keyboard.IsKeyPressed(Keyboard.Key.S))
-            {
-                Vector2f aux = new Vector2f(view.Center.X, view.Center.Y + velocidade * z * deltatime);
-                view.Center = aux;
-            }
+                auxVec.Y = view.Center.Y + vel;
+
             else if (Keyboard.IsKeyPressed(Keyboard.Key.D))
-            {
-                Vector2f aux = new Vector2f(view.Center.X + velocidade * z * deltatime, view.Center.Y);
-                view.Center = aux;
-            }
+                auxVec.X = view.Center.X + vel;
+
+            view.Center = auxVec;
         }
 
     }

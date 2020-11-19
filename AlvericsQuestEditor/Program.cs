@@ -37,6 +37,7 @@ namespace AlvericsQuestEditor
         private Vector2f coordViewMenu;
         private Mundo mundo;
         private int zoom;
+        private Acao acao;
 
         public Editor()
         {
@@ -118,6 +119,16 @@ namespace AlvericsQuestEditor
                 // Executa a janela
                 window.Display();
 
+                Vector2f vec = window.MapPixelToCoords(Mouse.GetPosition(window), viewMundo);
+                if (acao == Acao.AdicionarObjeto &&
+                    Mouse.GetPosition(window).X <= window.Size.X * Informacoes.propViewMundo && 
+                    Mouse.IsButtonPressed(Mouse.Button.Left))
+                {
+                    mundo.GerenciadorEnt.InserirEntidade(vec.X, vec.Y);
+                    Console.WriteLine(mundo.GerenciadorEnt.QuantidadeTotalEntidades());
+                }
+
+
                 // Limpa a janela
                 window.Clear(Color.White);
             }
@@ -146,10 +157,32 @@ namespace AlvericsQuestEditor
         {
             if (e.Button == Mouse.Button.Left)
             {
-                if(menu.BotaoPressionado(Mouse.GetPosition(window)) == Acao.IndicarEntidade)
+                if(Mouse.GetPosition(window).X >= window.Size.X * Informacoes.propViewMundo)
                 {
-                    //Console.WriteLine(menu.posicaoEntidade);
+                    Acao botaoPressionado = menu.BotaoPressionado(Mouse.GetPosition(window));
+
+                    switch (botaoPressionado)
+                    {
+                        case Acao.IndicarEntidade:
+                            mundo.GerenciadorEnt.PosicaoEntidade = menu.PosicaoEntidade;
+                            break;
+
+                        case Acao.AdicionarObjeto:
+                            acao = Acao.AdicionarObjeto;
+                            break;
+                    }
                 }
+                /*else
+                {
+                    Vector2f vec = window.MapPixelToCoords(Mouse.GetPosition(window), viewMundo);
+
+                    switch (acao)
+                    {
+                        case Acao.AdicionarObjeto:
+                            mundo.GerenciadorEnt.InserirEntidade(vec.X, vec.Y);
+                            break;
+                    }
+                }*/
             }
         }
 
@@ -181,7 +214,6 @@ namespace AlvericsQuestEditor
                     zoom++;
                 }
                     
-
                 else if (e.Delta < 0)
                 {
                     viewMundo.Zoom(1.1f);
