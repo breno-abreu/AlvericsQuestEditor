@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using SFML.Graphics;
 using SFML.System;
 
@@ -15,7 +14,19 @@ namespace AlvericsQuestEditor
         private View view;
 
         // Lista contendo todas as entidades presentes no mundo
-        private LinkedList<Entidade> entidades;
+        private List<Entidade> entidades;
+
+        // Lista contendo as entidades intangíveis
+        private List<Entidade> entidadesIntangiveis;
+
+        // Lista contendo as entidades tangíveis
+        private List<Entidade> entidadesTangiveis;
+
+        // Lista de armadilhas
+        private List<Armadilha> armadilhas;
+
+        // Lista de mecanismos
+        private List<Mecanismo> mecanismos;
 
         // Textura contendo todas as texturas das entidades
         private Texture texturaPrincipal;
@@ -35,7 +46,11 @@ namespace AlvericsQuestEditor
             this.window = window;
             this.view = view;
 
-            entidades = new LinkedList<Entidade>();
+            entidades = new List<Entidade>();
+            entidadesIntangiveis = new List<Entidade>();
+            entidadesTangiveis = new List<Entidade>();
+            armadilhas = new List<Armadilha>();
+            mecanismos = new List<Mecanismo>();
 
             try
             {
@@ -59,10 +74,17 @@ namespace AlvericsQuestEditor
             auxX = (int)(x / 16) * 16 + auxX;
             auxY = (int)(y / 16) * 16 + auxY;
 
-            if (!HaEntidadeAqui(auxX, auxY))
+            TipoEntidade tipo;
+
+            if (PosicaoEntidade.X == 1 && PosicaoEntidade.Y == 0)
+                tipo = TipoEntidade.Intangivel;
+            else
+                tipo = TipoEntidade.Tangivel;
+
+            if (!HaEntidadeAqui(auxX, auxY, tipo))
             {
-            // Dimensões de um bloco na textura principal
-            int comprimento = (int)(spritePrincipal.Texture.Size.X / Informacoes.qtdEntidades.X);
+                // Dimensões de um bloco na textura principal
+                int comprimento = (int)(spritePrincipal.Texture.Size.X / Informacoes.qtdEntidades.X);
                 int altura = (int)(spritePrincipal.Texture.Size.Y / Informacoes.qtdEntidades.Y);
 
                 // Encontra e recorta na textura principal a nova textura da entidade baseada na coluna e na linha recebidas
@@ -73,19 +95,45 @@ namespace AlvericsQuestEditor
 
                 s.Position = new Vector2f(auxX, auxY);
 
-                entidades.AddLast(new Entidade(s));
+                Entidade aux = new Entidade(s, tipo);
+                //entidades.Add(aux);
+
+                if (tipo == TipoEntidade.Intangivel)
+                    entidadesIntangiveis.Add(aux);
+                else
+                    entidadesTangiveis.Add(aux);
+
+            }
+        }
+
+        public void ExcluirEntidade(float x, float y)
+        {
+            int auxX = x >= 0 ? 8 : -8;
+            int auxY = y >= 0 ? 8 : -8;
+
+            auxX = (int)(x / 16) * 16 + auxX;
+            auxY = (int)(y / 16) * 16 + auxY;
+
+            for(int i = entidadesIntangiveis.Count - 1; i >= 0 && entidadesIntangiveis.Count > 0; i--)
+            {
+                if(entidadesIntangiveis[i].ESprite.Position.X == auxX && entidadesIntangiveis[i].ESprite.Position.Y == auxY)
+                    entidadesIntangiveis.Remove(entidadesIntangiveis[i]);
+            }
+
+            for (int i = entidadesTangiveis.Count - 1; i >= 0 && entidadesTangiveis.Count > 0; i--)
+            {
+                if (entidadesTangiveis[i].ESprite.Position.X == auxX && entidadesTangiveis[i].ESprite.Position.Y == auxY)
+                    entidadesTangiveis.Remove(entidadesTangiveis[i]);
             }
         }
 
         public void AtualizarEntidades()
         {
-            foreach(Entidade entidade in entidades)
-            {
+            foreach(Entidade entidade in entidadesIntangiveis)
                 entidade.Desenhar(window);
 
-                /*if (entidade.Excluir)
-                    entidades.Remove(entidade);*/
-            }
+            foreach (Entidade entidade in entidadesTangiveis)
+                entidade.Desenhar(window);
         }
 
         public int QuantidadeTotalEntidades()
@@ -93,12 +141,33 @@ namespace AlvericsQuestEditor
             return entidades.Count;
         }
 
-        public bool HaEntidadeAqui(float x, float y)
+        private bool HaEntidadeAqui(float x, float y, TipoEntidade tipo)
         {
-            foreach(Entidade entidade in entidades)
-                if (entidade.ESprite.Position.X == x && entidade.ESprite.Position.Y == y) return true;
-                
+            if(tipo == TipoEntidade.Intangivel)
+            {
+                foreach (Entidade entidade in entidadesIntangiveis)
+                {
+                    if (entidade.ESprite.Position.X == x && entidade.ESprite.Position.Y == y)
+                            return true;
+                }
+            }
+            else
+            {
+                foreach (Entidade entidade in entidadesTangiveis)
+                {
+                    if (entidade.ESprite.Position.X == x && entidade.ESprite.Position.Y == y)
+                        return true;
+                }
+            }
+            
             return false;
+        }
+
+        public void LimparListas()
+        {
+            //entidades.Clear();
+            entidadesIntangiveis.Clear();
+            entidadesTangiveis.Clear();
         }
     }
 }

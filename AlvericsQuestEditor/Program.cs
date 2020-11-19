@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+using System.Threading;
 
 namespace AlvericsQuestEditor
 {
     public static class Informacoes
     {
-        public static Vector2i qtdEntidades = new Vector2i(5, 3);
-        public static string entidadesImgPath = @"teste.png";
+        public static Vector2i qtdEntidades = new Vector2i(5, 1);
+        public static string entidadesImgPath = @"all.png";
         public static float propViewMenu = .3f;
         public static float propViewMundo = .7f;
     }
@@ -26,8 +28,8 @@ namespace AlvericsQuestEditor
     class Editor
     {
         private RenderWindow window;
-        private View viewMundo;
-        private View viewMenu;
+        private SFML.Graphics.View viewMundo;
+        private SFML.Graphics.View viewMenu;
         private Menu menu;
         private const uint comprimentoInicialTela = 1600;
         private const uint alturaInicialTela = 900;
@@ -38,6 +40,7 @@ namespace AlvericsQuestEditor
         private Mundo mundo;
         private int zoom;
         private Acao acao;
+        private bool bloqueandoAcoes;
 
         public Editor()
         {
@@ -46,13 +49,13 @@ namespace AlvericsQuestEditor
                                       "Alveric's Quest Editor", Styles.Default);
 
             // Cria uma view para o mundo
-            viewMundo = new View();
+            viewMundo = new SFML.Graphics.View();
             // Seleciona a fração da tela ocupada por essa view
             viewMundo.Viewport = new FloatRect(0f, 0f, Informacoes.propViewMundo, 1f);
             viewMundo.Size = new Vector2f(window.Size.X * Informacoes.propViewMundo, window.Size.Y);
 
             // Cria uma view para o menu
-            viewMenu = new View();
+            viewMenu = new SFML.Graphics.View();
             // Seleciona a fração da tela ocupada por essa view
             viewMenu.Viewport = new FloatRect(Informacoes.propViewMundo, 0f, Informacoes.propViewMenu, 1f);
             viewMenu.Size = new Vector2f(window.Size.X * Informacoes.propViewMenu, window.Size.Y);
@@ -83,6 +86,7 @@ namespace AlvericsQuestEditor
             clock = new Clock();
 
             coordViewMenu = viewMenu.Center;
+            bloqueandoAcoes = false;
 
             /* Inclui um método para os event handlers: */
             // Método chamado quando ó botão de finalizar o programa é pressionado
@@ -107,6 +111,7 @@ namespace AlvericsQuestEditor
 
                 // Trata os eventos da janela
                 window.DispatchEvents();
+                
 
                 window.SetView(viewMundo);
                 mundo.Desenhar();
@@ -116,22 +121,54 @@ namespace AlvericsQuestEditor
                 window.SetView(viewMenu);
                 menu.Desenhar();
 
+                TratarEventos();
+
                 // Executa a janela
                 window.Display();
-
-                Vector2f vec = window.MapPixelToCoords(Mouse.GetPosition(window), viewMundo);
-                if (acao == Acao.AdicionarObjeto &&
-                    Mouse.GetPosition(window).X <= window.Size.X * Informacoes.propViewMundo && 
-                    Mouse.IsButtonPressed(Mouse.Button.Left))
-                {
-                    mundo.GerenciadorEnt.InserirEntidade(vec.X, vec.Y);
-                    Console.WriteLine(mundo.GerenciadorEnt.QuantidadeTotalEntidades());
-                }
-
 
                 // Limpa a janela
                 window.Clear(Color.White);
             }
+        }
+
+        private void TratarEventos()
+        {
+            Vector2f vec = window.MapPixelToCoords(Mouse.GetPosition(window), viewMundo);
+
+            if (acao == Acao.AdicionarObjeto &&
+                Mouse.GetPosition(window).X <= window.Size.X * Informacoes.propViewMundo &&
+                Mouse.IsButtonPressed(Mouse.Button.Left))
+            {
+                mundo.GerenciadorEnt.InserirEntidade(vec.X, vec.Y);
+                //Console.WriteLine(mundo.GerenciadorEnt.QuantidadeTotalEntidades());
+            }
+
+            else if (acao == Acao.ExcluirObjeto &&
+                Mouse.GetPosition(window).X <= window.Size.X * Informacoes.propViewMundo &&
+                Mouse.IsButtonPressed(Mouse.Button.Left))
+            {
+                mundo.GerenciadorEnt.ExcluirEntidade(vec.X, vec.Y);
+            }
+
+
+            else if (acao == Acao.NovoMundo)
+            {
+                acao = Acao.Nenhum;
+                bloqueandoAcoes = true;
+                Thread t1 = new Thread(MostrarAvisoNovoMundo);
+                t1.Start();
+            }
+        }
+
+        public void MostrarAvisoNovoMundo()
+        {
+            DialogResult dialogResult = MessageBox.Show("Deseja criar um novo mundo?\nTodo o progresso não salvo será perdido!",
+                                                            "Aviso", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+                mundo.NovoMundo();
+
+            menu.ResetarCorBotoes();
+            bloqueandoAcoes = false;
         }
 
         /* Método chamado quando a tela é redimensionada */
@@ -155,7 +192,7 @@ namespace AlvericsQuestEditor
         /* Eventos quando os botões do mouse são pressionados */
         private void Window_MouseButtonPressed(object sender, MouseButtonEventArgs e)
         {
-            if (e.Button == Mouse.Button.Left)
+            if (e.Button == Mouse.Button.Left && !bloqueandoAcoes)
             {
                 if(Mouse.GetPosition(window).X >= window.Size.X * Informacoes.propViewMundo)
                 {
@@ -167,22 +204,11 @@ namespace AlvericsQuestEditor
                             mundo.GerenciadorEnt.PosicaoEntidade = menu.PosicaoEntidade;
                             break;
 
-                        case Acao.AdicionarObjeto:
-                            acao = Acao.AdicionarObjeto;
+                        default:
+                            acao = botaoPressionado;
                             break;
                     }
                 }
-                /*else
-                {
-                    Vector2f vec = window.MapPixelToCoords(Mouse.GetPosition(window), viewMundo);
-
-                    switch (acao)
-                    {
-                        case Acao.AdicionarObjeto:
-                            mundo.GerenciadorEnt.InserirEntidade(vec.X, vec.Y);
-                            break;
-                    }
-                }*/
             }
         }
 
@@ -219,7 +245,6 @@ namespace AlvericsQuestEditor
                     viewMundo.Zoom(1.1f);
                     zoom--;
                 }
-                    
             }
         }
 

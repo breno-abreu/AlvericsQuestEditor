@@ -32,4 +32,16 @@ namespace AlvericsQuestEditor
         Nenhum,
         Protagonista,
     }
+
+    public enum TipoEntidade
+    {
+        Tangivel,
+        Intangivel,
+    }
+
+    public enum TipoArmadilha
+    {
+        Espinhos,
+        Atirador,
+    }
 }

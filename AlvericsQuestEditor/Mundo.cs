@@ -58,5 +58,10 @@ namespace AlvericsQuestEditor
             view.Center = auxVec;
         }
 
+        public void NovoMundo()
+        {
+            GerenciadorEnt.LimparListas();
+        }
+
     }
 }
