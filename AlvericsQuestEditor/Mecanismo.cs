@@ -16,12 +16,25 @@ namespace AlvericsQuestEditor
 
         public void IncluirArmadilha(Armadilha a)
         {
-            armadilhas.Add(a);
+            bool aux = false;
+            foreach (Armadilha armadilha in armadilhas)
+            {
+                if (armadilha.ESprite.Position.X == a.ESprite.Position.X &&
+                   armadilha.ESprite.Position.Y == a.ESprite.Position.Y)
+                    aux = true;
+            }
+
+            if(!aux) armadilhas.Add(a);
         }
 
         public void ExcluirArmadilha(Armadilha a)
         {
             armadilhas.Remove(a);
+        }
+
+        public void Imprimir()
+        {
+            Console.WriteLine(armadilhas.Count);
         }
     }
 }

@@ -110,6 +110,12 @@ namespace AlvericsQuestEditor
                     entidadesTangiveis.Add(a);
                     armadilhas.Add(a);
                 }
+                else if (PosicaoEntidade.X == 4 && PosicaoEntidade.Y == 0)
+                {
+                    Mecanismo m = new Mecanismo(s, tipo);
+                    entidadesTangiveis.Add(m);
+                    mecanismos.Add(m);
+                }
                 else
                 {
                     Entidade aux = new Entidade(s, tipo);
@@ -212,6 +218,22 @@ namespace AlvericsQuestEditor
             {
                 if (armadilha.ESprite.Position.X == auxX && armadilha.ESprite.Position.Y == auxY)
                     return armadilha;
+            }
+            return null;
+        }
+
+        public Mecanismo SelecionarMecanismo(float x, float y)
+        {
+            int auxX = x >= 0 ? 8 : -8;
+            int auxY = y >= 0 ? 8 : -8;
+
+            auxX = (int)(x / 16) * 16 + auxX;
+            auxY = (int)(y / 16) * 16 + auxY;
+
+            foreach (Mecanismo mecanismo in mecanismos)
+            {
+                if (mecanismo.ESprite.Position.X == auxX && mecanismo.ESprite.Position.Y == auxY)
+                    return mecanismo;
             }
             return null;
         }

@@ -24,6 +24,12 @@ namespace AlvericsQuestEditor
         // Vetor auxiliar para operações de movimentação
         private Vector2f auxVec;
 
+        // Referência para um mecanismo,usada para determinar uma conexão com uma armadilha
+        public Mecanismo MecanismoAux { get; set; }
+
+        // Referencia para uma armadilha, usada para determinar uma conexão com um mecanismo
+        public Armadilha ArmadilhaAux { get; set; }
+
         public Mundo(RenderWindow window, View view)
         {
             this.window = window;
