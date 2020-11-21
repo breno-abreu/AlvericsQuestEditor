@@ -10,6 +10,7 @@ namespace AlvericsQuestEditor
         public float TempoInicial { get; set; }
         public float TempoEntreAtivacoes { get; set; }
         public float TempoAtivo { get; set; }
+        public TipoArmadilha TipoA { get; private set; }
         public Armadilha(Sprite sprite, TipoEntidade tipo, TipoArmadilha tipoArmadilha):
             base(sprite, tipo)
         {
@@ -20,6 +21,8 @@ namespace AlvericsQuestEditor
                 TempoAtivo = 0;
             else
                 TempoAtivo = -1;
+
+            TipoA = tipoArmadilha;
         }
     }
 }

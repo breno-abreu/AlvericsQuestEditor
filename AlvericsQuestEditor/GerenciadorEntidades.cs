@@ -95,14 +95,30 @@ namespace AlvericsQuestEditor
 
                 s.Position = new Vector2f(auxX, auxY);
 
-                Entidade aux = new Entidade(s, tipo);
+                //entidade aux = new Entidade(s, tipo);
                 //entidades.Add(aux);
 
-                if (tipo == TipoEntidade.Intangivel)
-                    entidadesIntangiveis.Add(aux);
+                if(PosicaoEntidade.X == 2 && PosicaoEntidade.Y == 0)
+                {
+                    Armadilha a = new Armadilha(s, tipo, TipoArmadilha.Atirador);
+                    entidadesTangiveis.Add(a);
+                    armadilhas.Add(a);
+                }
+                else if(PosicaoEntidade.X == 3 && PosicaoEntidade.Y == 0)
+                {
+                    Armadilha a = new Armadilha(s, tipo, TipoArmadilha.Espinhos);
+                    entidadesTangiveis.Add(a);
+                    armadilhas.Add(a);
+                }
                 else
-                    entidadesTangiveis.Add(aux);
+                {
+                    Entidade aux = new Entidade(s, tipo);
 
+                    if (tipo == TipoEntidade.Intangivel)
+                        entidadesIntangiveis.Add(aux);
+                    else
+                        entidadesTangiveis.Add(aux);
+                }
             }
         }
 
@@ -125,6 +141,19 @@ namespace AlvericsQuestEditor
                 if (entidadesTangiveis[i].ESprite.Position.X == auxX && entidadesTangiveis[i].ESprite.Position.Y == auxY)
                     entidadesTangiveis.Remove(entidadesTangiveis[i]);
             }
+
+            for (int i = mecanismos.Count - 1; i >= 0 && mecanismos.Count > 0; i--)
+            {
+                if (mecanismos[i].ESprite.Position.X == auxX && mecanismos[i].ESprite.Position.Y == auxY)
+                    mecanismos.Remove(mecanismos[i]);
+            }
+
+            for (int i = armadilhas.Count - 1; i >= 0 && armadilhas.Count > 0; i--)
+            {
+                if (armadilhas[i].ESprite.Position.X == auxX && armadilhas[i].ESprite.Position.Y == auxY)
+                    armadilhas.Remove(armadilhas[i]);
+            }
+
         }
 
         public void AtualizarEntidades()
@@ -168,6 +197,24 @@ namespace AlvericsQuestEditor
             //entidades.Clear();
             entidadesIntangiveis.Clear();
             entidadesTangiveis.Clear();
+            armadilhas.Clear();
+            mecanismos.Clear();
+        }
+
+        public Armadilha SelecionarArmadilha(float x, float y)
+        {
+            int auxX = x >= 0 ? 8 : -8;
+            int auxY = y >= 0 ? 8 : -8;
+
+            auxX = (int)(x / 16) * 16 + auxX;
+            auxY = (int)(y / 16) * 16 + auxY;
+
+            foreach (Armadilha armadilha in armadilhas)
+            {
+                if (armadilha.ESprite.Position.X == auxX && armadilha.ESprite.Position.Y == auxY)
+                    return armadilha;
+            }
+            return null;
         }
     }
 }

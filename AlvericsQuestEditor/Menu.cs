@@ -80,9 +80,6 @@ namespace AlvericsQuestEditor
         private Text taValorT;
 
         // Variáveis dos valores das propriedades
-        private float tiValor;
-        private float teaValor;
-        private float taValor;
         private const string na = "N/A";
 
         // Proporção do distanciamento entre botões no eixo X
@@ -117,6 +114,9 @@ namespace AlvericsQuestEditor
 
         // Referência para a view que contém o menu
         private View view;
+
+        // Referencia para a armadilha que terá seus atributos modificados
+        public Armadilha ArmadilhaAux { get; set; }
 
 
         public Menu(RenderWindow window, View view)
@@ -257,11 +257,6 @@ namespace AlvericsQuestEditor
 
             // Define a origem dos textos em seus centros
             AtualizarOriginLabels();
-
-            // Inicializa o valor de cada uma das operações
-            taValor = 0;
-            teaValor = 0;
-            tiValor = 0;
         }
 
         
@@ -333,7 +328,7 @@ namespace AlvericsQuestEditor
                         mousePos.Y >= bCoord.Y && mousePos.Y <= bAltura)
                     {
                         // Reseta a cor de todos os botões para o branco
-                        ResetarCorBotoes();
+                        // ResetarCorBotoes();
 
                         // Pinta o botão com uma cor diferente dos demais
                         botao.BSprite.Color = new Color(50, 70, 90);
@@ -344,7 +339,7 @@ namespace AlvericsQuestEditor
                         // Atualiza os valores das propriedades
                         AtualizarValores(botao.BAcao);
 
-                        return botao.BAcao;
+                        return Acao.GerenciarPropriedades;
                     }
                 }
             }
@@ -374,42 +369,53 @@ namespace AlvericsQuestEditor
             return Acao.Nenhum;
         }
 
-        private void AtualizarValores(Acao a)
+        public void AtualizarValores(Acao a)
         {
-            /* Atualiza os avlores das operações do menu de propriedades dependendo da operação usada */
-            if(a == Acao.AumentarTempoInicio)
+            if (ArmadilhaAux != null)
             {
-                tiValor += 0.5f;
-                tiValorT.DisplayedString = tiValor.ToString(); 
-            }
-            else if (a == Acao.ReduzirTempoInicio && tiValor > 0)
-            {
-                tiValor -= 0.5f;
-                tiValorT.DisplayedString = tiValor.ToString();
-            }
-            else if (a == Acao.AumentarTempoEntreAtivacoes)
-            {
-                teaValor += 0.5f;
-                teaValorT.DisplayedString = teaValor.ToString();
-            }
-            else if (a == Acao.ReduzirTempoEntreAtivacoes && teaValor > 0)
-            {
-                teaValor -= 0.5f;
-                teaValorT.DisplayedString = teaValor.ToString();
-            }
-            else if (a == Acao.AumentarTempoAtivo)
-            {
-                taValor += 0.5f;
-                taValorT.DisplayedString = taValor.ToString();
-            }
-            else if (a == Acao.ReduzirTempoAtivo && taValor > 0)
-            {
-                taValor -= 0.5f;
-                taValorT.DisplayedString = taValor.ToString();
-            }
+                /* Atualiza os valores das operações do menu de propriedades dependendo da operação usada */
+                if (a == Acao.AumentarTempoInicio)
+                    ArmadilhaAux.TempoInicial += 0.5f;
 
-            // Atualiza a origem dos textos, pois com a mudança no texto a origem deve ser alterada para mantê-la na posição correta
-            AtualizarOriginLabels();
+                else if (a == Acao.ReduzirTempoInicio && ArmadilhaAux.TempoInicial > 0)
+                    ArmadilhaAux.TempoInicial -= 0.5f;
+                    
+                else if (a == Acao.AumentarTempoEntreAtivacoes)
+                    ArmadilhaAux.TempoEntreAtivacoes += 0.5f;
+
+                else if (a == Acao.ReduzirTempoEntreAtivacoes && ArmadilhaAux.TempoEntreAtivacoes > 0)
+                    ArmadilhaAux.TempoEntreAtivacoes -= 0.5f;
+
+                else
+                {
+                    if (ArmadilhaAux.TipoA == TipoArmadilha.Espinhos)
+                    {
+                        if (a == Acao.AumentarTempoAtivo)
+                            ArmadilhaAux.TempoAtivo += 0.5f;
+
+                        else if (a == Acao.ReduzirTempoAtivo && ArmadilhaAux.TempoAtivo > 0)
+                            ArmadilhaAux.TempoAtivo -= 0.5f;
+
+                        taValorT.DisplayedString = ArmadilhaAux.TempoAtivo.ToString();
+                    }
+                    else
+                        taValorT.DisplayedString = na;
+                }
+
+                tiValorT.DisplayedString = ArmadilhaAux.TempoInicial.ToString();
+                teaValorT.DisplayedString = ArmadilhaAux.TempoEntreAtivacoes.ToString();
+
+                
+                // Atualiza a origem dos textos, pois com a mudança no texto a origem deve ser alterada para mantê-la na posição correta
+                AtualizarOriginLabels();
+            }
+            else
+            {
+                tiValorT.DisplayedString = na;
+                teaValorT.DisplayedString = na;
+                taValorT.DisplayedString = na;
+                AtualizarOriginLabels();
+            }
         }
 
         public void ResetarCorBotoes()
@@ -433,7 +439,6 @@ namespace AlvericsQuestEditor
             background.Position = aux;
         }
 
-        
         public void Desenhar()
         {
             /* Desenha todos os elementos do menu na tela */

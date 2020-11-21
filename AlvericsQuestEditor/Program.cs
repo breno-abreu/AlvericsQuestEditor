@@ -41,6 +41,7 @@ namespace AlvericsQuestEditor
         private int zoom;
         private Acao acao;
         private bool bloqueandoAcoes;
+        private Vector2f posMouseMundo;
 
         public Editor()
         {
@@ -87,6 +88,7 @@ namespace AlvericsQuestEditor
 
             coordViewMenu = viewMenu.Center;
             bloqueandoAcoes = false;
+            posMouseMundo = new Vector2f();
 
             /* Inclui um método para os event handlers: */
             // Método chamado quando ó botão de finalizar o programa é pressionado
@@ -133,13 +135,13 @@ namespace AlvericsQuestEditor
 
         private void TratarEventos()
         {
-            Vector2f vec = window.MapPixelToCoords(Mouse.GetPosition(window), viewMundo);
+            posMouseMundo = window.MapPixelToCoords(Mouse.GetPosition(window), viewMundo);
 
             if (acao == Acao.AdicionarObjeto &&
                 Mouse.GetPosition(window).X <= window.Size.X * Informacoes.propViewMundo &&
                 Mouse.IsButtonPressed(Mouse.Button.Left))
             {
-                mundo.GerenciadorEnt.InserirEntidade(vec.X, vec.Y);
+                mundo.GerenciadorEnt.InserirEntidade(posMouseMundo.X, posMouseMundo.Y);
                 //Console.WriteLine(mundo.GerenciadorEnt.QuantidadeTotalEntidades());
             }
 
@@ -147,7 +149,7 @@ namespace AlvericsQuestEditor
                 Mouse.GetPosition(window).X <= window.Size.X * Informacoes.propViewMundo &&
                 Mouse.IsButtonPressed(Mouse.Button.Left))
             {
-                mundo.GerenciadorEnt.ExcluirEntidade(vec.X, vec.Y);
+                mundo.GerenciadorEnt.ExcluirEntidade(posMouseMundo.X, posMouseMundo.Y);
             }
 
 
@@ -206,6 +208,21 @@ namespace AlvericsQuestEditor
 
                         default:
                             acao = botaoPressionado;
+                            if(acao != Acao.GerenciarPropriedades)
+                            {
+                                menu.ArmadilhaAux = null;
+                                menu.AtualizarValores(Acao.Nenhum);
+                            }
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (acao)
+                    {
+                        case Acao.GerenciarPropriedades:
+                            menu.ArmadilhaAux = mundo.GerenciadorEnt.SelecionarArmadilha(posMouseMundo.X, posMouseMundo.Y);
+                            menu.AtualizarValores(Acao.Nenhum);
                             break;
                     }
                 }
