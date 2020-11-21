@@ -158,9 +158,8 @@ namespace AlvericsQuestEditor
 
         public void AtualizarEntidades()
         {
-            foreach(Entidade entidade in entidadesIntangiveis)
+            foreach (Entidade entidade in entidadesIntangiveis)
                 entidade.Desenhar(window);
-
             foreach (Entidade entidade in entidadesTangiveis)
                 entidade.Desenhar(window);
         }

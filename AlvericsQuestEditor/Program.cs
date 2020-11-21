@@ -42,6 +42,7 @@ namespace AlvericsQuestEditor
         private Acao acao;
         private bool bloqueandoAcoes;
         private Vector2f posMouseMundo;
+        private bool novoMundo;
 
         public Editor()
         {
@@ -89,6 +90,7 @@ namespace AlvericsQuestEditor
             coordViewMenu = viewMenu.Center;
             bloqueandoAcoes = false;
             posMouseMundo = new Vector2f();
+            novoMundo = false;
 
             /* Inclui um método para os event handlers: */
             // Método chamado quando ó botão de finalizar o programa é pressionado
@@ -152,13 +154,18 @@ namespace AlvericsQuestEditor
                 mundo.GerenciadorEnt.ExcluirEntidade(posMouseMundo.X, posMouseMundo.Y);
             }
 
-
             else if (acao == Acao.NovoMundo)
             {
                 acao = Acao.Nenhum;
                 bloqueandoAcoes = true;
                 Thread t1 = new Thread(MostrarAvisoNovoMundo);
                 t1.Start();
+            }
+
+            if (novoMundo)
+            {
+                novoMundo = false;
+                mundo.NovoMundo();
             }
         }
 
@@ -167,7 +174,7 @@ namespace AlvericsQuestEditor
             DialogResult dialogResult = MessageBox.Show("Deseja criar um novo mundo?\nTodo o progresso não salvo será perdido!",
                                                             "Aviso", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
-                mundo.NovoMundo();
+                novoMundo = true;
 
             menu.ResetarCorBotoes();
             bloqueandoAcoes = false;
