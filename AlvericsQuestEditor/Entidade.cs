@@ -11,7 +11,6 @@ namespace AlvericsQuestEditor
         public bool Excluir { get; set; }
         public TipoEntidade Tipo { get; private set; }
 
-
         public Entidade(Sprite sprite, TipoEntidade tipo)
         {
             ESprite = sprite;

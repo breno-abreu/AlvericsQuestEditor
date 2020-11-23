@@ -296,6 +296,11 @@ namespace AlvericsQuestEditor
                                 mundo.MecanismoAux.DesenharQuadradoArmadilhas();
                             }
                             break;
+
+                        case Acao.GerenciarDialogos:
+                            if (mundo.GerenciadorEnt.HaNPCAqui(posMouseMundo.X, posMouseMundo.Y))
+                                gerenciadorArquivos.CarregarDialogo(posMouseMundo);
+                            break;
                     }
                 }
             }

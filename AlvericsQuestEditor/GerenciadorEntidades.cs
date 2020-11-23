@@ -28,6 +28,9 @@ namespace AlvericsQuestEditor
         // Lista de mecanismos
         private List<Mecanismo> mecanismos;
 
+        // Lista de NPCs
+        private List<Entidade> npcs;
+
         // Textura contendo todas as texturas das entidades
         private Texture texturaPrincipal;
 
@@ -51,6 +54,7 @@ namespace AlvericsQuestEditor
             entidadesTangiveis = new List<Entidade>();
             armadilhas = new List<Armadilha>();
             mecanismos = new List<Mecanismo>();
+            npcs = new List<Entidade>();
 
             try
             {
@@ -112,6 +116,12 @@ namespace AlvericsQuestEditor
                     entidadesTangiveis.Add(m);
                     mecanismos.Add(m);
                 }
+                else if (PosicaoEntidade.X == 0 && PosicaoEntidade.Y == 1)
+                {
+                    Entidade e = new Entidade(s, tipo);
+                    entidadesTangiveis.Add(e);
+                    npcs.Add(e);
+                }
                 else
                 {
                     Entidade aux = new Entidade(s, tipo);
@@ -150,6 +160,12 @@ namespace AlvericsQuestEditor
             {
                 if (armadilhas[i].ESprite.Position.X == vec.X && armadilhas[i].ESprite.Position.Y == vec.Y)
                     armadilhas.Remove(armadilhas[i]);
+            }
+
+            for (int i = npcs.Count - 1; i >= 0 && npcs.Count > 0; i--)
+            {
+                if (npcs[i].ESprite.Position.X == vec.X && npcs[i].ESprite.Position.Y == vec.Y)
+                    npcs.Remove(npcs[i]);
             }
 
         }
@@ -196,6 +212,7 @@ namespace AlvericsQuestEditor
             entidadesTangiveis.Clear();
             armadilhas.Clear();
             mecanismos.Clear();
+            npcs.Clear();
         }
 
         public Armadilha SelecionarArmadilha(float x, float y)
@@ -220,6 +237,19 @@ namespace AlvericsQuestEditor
                     return mecanismo;
             }
             return null;
+        }
+
+        public bool HaNPCAqui(float x, float y)
+        {
+            Vector2f vec = GetPosicaoAjustada(x, y);
+
+            foreach(Entidade npc in npcs)
+            {
+                if (npc.ESprite.Position.X == vec.X && npc.ESprite.Position.Y == vec.Y)
+                    return true;
+            }
+
+            return false;
         }
 
         public Vector2f GetPosicaoAjustada(float x, float y)
