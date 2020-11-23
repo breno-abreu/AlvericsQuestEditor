@@ -27,12 +27,6 @@ namespace AlvericsQuestEditor
         ReduzirTempoEntreAtivacoes,
     }
 
-    public enum EntidadeEnum
-    {
-        Nenhum,
-        Protagonista,
-    }
-
     public enum TipoEntidade
     {
         Tangivel,

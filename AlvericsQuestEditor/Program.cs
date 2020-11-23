@@ -18,6 +18,7 @@ namespace AlvericsQuestEditor
 
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             Editor editor = new Editor();
@@ -43,6 +44,7 @@ namespace AlvericsQuestEditor
         private bool bloqueandoAcoes;
         private Vector2f posMouseMundo;
         private bool novoMundo;
+        private GerenciadorArquivos gerenciadorArquivos;
 
         public Editor()
         {
@@ -92,6 +94,7 @@ namespace AlvericsQuestEditor
             bloqueandoAcoes = false;
             posMouseMundo = new Vector2f();
             novoMundo = false;
+            gerenciadorArquivos = new GerenciadorArquivos();
             
             /* Inclui um método para os event handlers: */
             // Método chamado quando ó botão de finalizar o programa é pressionado
@@ -240,6 +243,9 @@ namespace AlvericsQuestEditor
                                 else
                                     mundo.GerenciadorEnt.ApagarQuadradoMecanismos();
                             }
+                            if(acao == Acao.GerenciarEventos)
+                                gerenciadorArquivos.CarregarEventos();
+
                             break;
                     }
                 }
