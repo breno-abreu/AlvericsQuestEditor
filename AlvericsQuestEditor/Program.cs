@@ -10,7 +10,7 @@ namespace AlvericsQuestEditor
 {
     public static class Informacoes
     {
-        public static Vector2i qtdEntidades = new Vector2i(5, 1);
+        public static Vector2i qtdEntidades = new Vector2i(5, 9);
         public static string entidadesImgPath = @"all.png";
         public static float propViewMenu = .3f;
         public static float propViewMundo = .7f;
@@ -43,8 +43,6 @@ namespace AlvericsQuestEditor
         private bool bloqueandoAcoes;
         private Vector2f posMouseMundo;
         private bool novoMundo;
-        private RectangleShape armadilhaRect;
-        private RectangleShape mecanismoRect;
 
         public Editor()
         {
@@ -94,18 +92,6 @@ namespace AlvericsQuestEditor
             bloqueandoAcoes = false;
             posMouseMundo = new Vector2f();
             novoMundo = false;
-
-            armadilhaRect = new RectangleShape(new Vector2f(16, 16));
-            armadilhaRect.OutlineThickness = 1;
-            armadilhaRect.OutlineColor = Color.Transparent;
-            armadilhaRect.FillColor = Color.Transparent;
-            armadilhaRect.Origin = new Vector2f(8, 8);
-            
-            mecanismoRect = new RectangleShape(new Vector2f(16, 16));
-            mecanismoRect.OutlineThickness = 1;
-            mecanismoRect.OutlineColor = Color.Transparent;
-            mecanismoRect.FillColor = Color.Transparent;
-            mecanismoRect.Origin = new Vector2f(8, 8);
             
             /* Inclui um método para os event handlers: */
             // Método chamado quando ó botão de finalizar o programa é pressionado
@@ -136,11 +122,10 @@ namespace AlvericsQuestEditor
                 mundo.Desenhar();
                 mundo.Mover(deltatime, -zoom);
 
-                if(acao == Acao.GerenciarConexao)
+                /*if(acao == Acao.GerenciarConexao)
                 {
-                    window.Draw(armadilhaRect);
-                    window.Draw(mecanismoRect);
-                }
+                    
+                }*/
 
                 // Muda para a viewMenu e desenha o menu na tela
                 window.SetView(viewMenu);
@@ -224,7 +209,7 @@ namespace AlvericsQuestEditor
         {
             if (e.Button == Mouse.Button.Left && !bloqueandoAcoes)
             {
-                if(Mouse.GetPosition(window).X >= window.Size.X * Informacoes.propViewMundo)
+                if (Mouse.GetPosition(window).X >= window.Size.X * Informacoes.propViewMundo)
                 {
                     Acao botaoPressionado = menu.BotaoPressionado(Mouse.GetPosition(window));
 
@@ -236,19 +221,25 @@ namespace AlvericsQuestEditor
 
                         default:
                             acao = botaoPressionado;
-                            if(acao != Acao.GerenciarPropriedades)
+                            if (acao != Acao.GerenciarPropriedades)
                             {
                                 menu.ArmadilhaAux = null;
                                 menu.AtualizarValores(Acao.Nenhum);
+                                mundo.GerenciadorEnt.ApagarQuadradoArmadilhas();
                             }
-                            if(acao != Acao.GerenciarConexao)
+                            if (acao != Acao.GerenciarConexao)
                             {
                                 mundo.ArmadilhaAux = null;
                                 mundo.MecanismoAux = null;
-                                armadilhaRect.OutlineColor = Color.Transparent;
-                                mecanismoRect.OutlineColor = Color.Transparent;
-                            }
 
+                                if (acao != Acao.GerenciarPropriedades)
+                                {
+                                    mundo.GerenciadorEnt.ApagarQuadradoArmadilhas();
+                                    mundo.GerenciadorEnt.ApagarQuadradoMecanismos();
+                                }
+                                else
+                                    mundo.GerenciadorEnt.ApagarQuadradoMecanismos();
+                            }
                             break;
                     }
                 }
@@ -258,6 +249,11 @@ namespace AlvericsQuestEditor
                     {
                         case Acao.GerenciarPropriedades:
                             menu.ArmadilhaAux = mundo.GerenciadorEnt.SelecionarArmadilha(posMouseMundo.X, posMouseMundo.Y);
+                            mundo.GerenciadorEnt.ApagarQuadradoArmadilhas();
+
+                            if (menu.ArmadilhaAux != null)
+                                menu.ArmadilhaAux.Selecionado = true;
+
                             menu.AtualizarValores(Acao.Nenhum);
                             break;
 
@@ -268,28 +264,50 @@ namespace AlvericsQuestEditor
                             if (aAux != null && mAux == null)
                             {
                                 mundo.ArmadilhaAux = aAux;
-                                armadilhaRect.Position = aAux.ESprite.Position;
-                                armadilhaRect.OutlineColor = Color.Blue;
                             }
-                                
+
                             else if (aAux == null && mAux != null)
                             {
+                                mundo.GerenciadorEnt.ApagarQuadradoMecanismos();
+                                mundo.GerenciadorEnt.ApagarQuadradoArmadilhas();
                                 mundo.MecanismoAux = mAux;
-                                mecanismoRect.Position = mAux.ESprite.Position;
-                                mecanismoRect.OutlineColor = Color.Red;
+                                mundo.MecanismoAux.Selecionado = true;
+                                mundo.MecanismoAux.ApagarQuadradoArmadilhas();
+                                mundo.MecanismoAux.DesenharQuadradoArmadilhas();
                             }
-                                
+
                             else
                             {
                                 mundo.ArmadilhaAux = null;
                                 mundo.MecanismoAux = null;
-                                armadilhaRect.OutlineColor = Color.Transparent;
-                                mecanismoRect.OutlineColor = Color.Transparent;
+                                mundo.GerenciadorEnt.ApagarQuadradoArmadilhas();
+                                mundo.GerenciadorEnt.ApagarQuadradoMecanismos();
                             }
 
                             if (mundo.ArmadilhaAux != null && mundo.MecanismoAux != null)
                             {
                                 mundo.MecanismoAux.IncluirArmadilha(mundo.ArmadilhaAux);
+                                mundo.MecanismoAux.DesenharQuadradoArmadilhas();
+                            }
+                            break;
+                    }
+                }
+            }
+            else if (e.Button == Mouse.Button.Right && !bloqueandoAcoes)
+            {
+                if (Mouse.GetPosition(window).X <= window.Size.X * Informacoes.propViewMundo)
+                {
+                    switch (acao)
+                    {
+                        case Acao.GerenciarConexao:
+                            if(mundo.MecanismoAux != null)
+                            {
+                                Armadilha armadilha = mundo.GerenciadorEnt.SelecionarArmadilha(posMouseMundo.X, posMouseMundo.Y);
+                                if (armadilha != null)
+                                {
+                                    armadilha.Selecionado = false;
+                                    mundo.MecanismoAux.ExcluirArmadilha(armadilha);
+                                }
                             }
                             break;
                     }

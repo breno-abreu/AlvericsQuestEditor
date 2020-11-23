@@ -195,7 +195,7 @@ namespace AlvericsQuestEditor
 
             // Cria um botão para o menu entidade. A entidade escolhida será determinada através da posição do mouse dentro da imagem, 
             // por isso existe apenas um botão para todas as entidades do mundo no menu
-            menuEntidades = new Botao(GetPosicaoBotao(0, 5), Informacoes.entidadesImgPath, Acao.IndicarEntidade, PROPORCAO_ENTIDADES);
+            menuEntidades = new Botao(GetPosicaoBotao(0, 7), Informacoes.entidadesImgPath, Acao.IndicarEntidade, PROPORCAO_ENTIDADES);
 
             PosicaoEntidade = new Vector2i();
         }
@@ -512,7 +512,7 @@ namespace AlvericsQuestEditor
             bTempoEntreAtivacoesSub.BSprite.Position = GetPosicaoBotao(-1, 6);
 
             // Determinar a nova posição dos botões do menu de entidades
-            menuEntidades.BSprite.Position = GetPosicaoBotao(0, 5);
+            menuEntidades.BSprite.Position = GetPosicaoBotao(0, 6);
         }
 
         private void RedimensionarBackground()

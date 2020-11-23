@@ -19,7 +19,7 @@ namespace AlvericsQuestEditor
             Tipo = tipo;
         }
 
-        public void Desenhar(RenderWindow window)
+        public virtual void Desenhar(RenderWindow window)
         {
             window.Draw(ESprite);
         }

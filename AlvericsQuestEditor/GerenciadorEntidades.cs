@@ -68,11 +68,7 @@ namespace AlvericsQuestEditor
 
         public void InserirEntidade(float x, float y)
         {
-            int auxX = x >= 0 ? 8 : -8;
-            int auxY = y >= 0 ? 8 : -8;
-
-            auxX = (int)(x / 16) * 16 + auxX;
-            auxY = (int)(y / 16) * 16 + auxY;
+            Vector2f vec = GetPosicaoAjustada(x, y);
 
             TipoEntidade tipo;
 
@@ -81,7 +77,7 @@ namespace AlvericsQuestEditor
             else
                 tipo = TipoEntidade.Tangivel;
 
-            if (!HaEntidadeAqui(auxX, auxY, tipo))
+            if (!HaEntidadeAqui(vec.X, vec.Y, tipo))
             {
                 // Dimensões de um bloco na textura principal
                 int comprimento = (int)(spritePrincipal.Texture.Size.X / Informacoes.qtdEntidades.X);
@@ -93,24 +89,24 @@ namespace AlvericsQuestEditor
                 Sprite s = new Sprite(spritePrincipal);
                 s.Origin = new Vector2f(comprimento / 2, altura / 2);
 
-                s.Position = new Vector2f(auxX, auxY);
+                s.Position = new Vector2f(vec.X, vec.Y);
 
                 //entidade aux = new Entidade(s, tipo);
                 //entidades.Add(aux);
 
-                if(PosicaoEntidade.X == 2 && PosicaoEntidade.Y == 0)
+                if((PosicaoEntidade.X >= 1 && PosicaoEntidade.X <= 4) && PosicaoEntidade.Y == 4)
                 {
                     Armadilha a = new Armadilha(s, tipo, TipoArmadilha.Atirador);
                     entidadesTangiveis.Add(a);
                     armadilhas.Add(a);
                 }
-                else if(PosicaoEntidade.X == 3 && PosicaoEntidade.Y == 0)
+                else if(PosicaoEntidade.X == 4 && PosicaoEntidade.Y == 3)
                 {
                     Armadilha a = new Armadilha(s, tipo, TipoArmadilha.Espinhos);
                     entidadesTangiveis.Add(a);
                     armadilhas.Add(a);
                 }
-                else if (PosicaoEntidade.X == 4 && PosicaoEntidade.Y == 0)
+                else if (PosicaoEntidade.X == 0 && (PosicaoEntidade.Y == 4 || PosicaoEntidade.Y == 5))
                 {
                     Mecanismo m = new Mecanismo(s, tipo);
                     entidadesTangiveis.Add(m);
@@ -130,33 +126,29 @@ namespace AlvericsQuestEditor
 
         public void ExcluirEntidade(float x, float y)
         {
-            int auxX = x >= 0 ? 8 : -8;
-            int auxY = y >= 0 ? 8 : -8;
+            Vector2f vec = GetPosicaoAjustada(x, y);
 
-            auxX = (int)(x / 16) * 16 + auxX;
-            auxY = (int)(y / 16) * 16 + auxY;
-
-            for(int i = entidadesIntangiveis.Count - 1; i >= 0 && entidadesIntangiveis.Count > 0; i--)
+            for (int i = entidadesIntangiveis.Count - 1; i >= 0 && entidadesIntangiveis.Count > 0; i--)
             {
-                if(entidadesIntangiveis[i].ESprite.Position.X == auxX && entidadesIntangiveis[i].ESprite.Position.Y == auxY)
+                if(entidadesIntangiveis[i].ESprite.Position.X == vec.X && entidadesIntangiveis[i].ESprite.Position.Y == vec.Y)
                     entidadesIntangiveis.Remove(entidadesIntangiveis[i]);
             }
 
             for (int i = entidadesTangiveis.Count - 1; i >= 0 && entidadesTangiveis.Count > 0; i--)
             {
-                if (entidadesTangiveis[i].ESprite.Position.X == auxX && entidadesTangiveis[i].ESprite.Position.Y == auxY)
+                if (entidadesTangiveis[i].ESprite.Position.X == vec.X && entidadesTangiveis[i].ESprite.Position.Y == vec.Y)
                     entidadesTangiveis.Remove(entidadesTangiveis[i]);
             }
 
             for (int i = mecanismos.Count - 1; i >= 0 && mecanismos.Count > 0; i--)
             {
-                if (mecanismos[i].ESprite.Position.X == auxX && mecanismos[i].ESprite.Position.Y == auxY)
+                if (mecanismos[i].ESprite.Position.X == vec.X && mecanismos[i].ESprite.Position.Y == vec.Y)
                     mecanismos.Remove(mecanismos[i]);
             }
 
             for (int i = armadilhas.Count - 1; i >= 0 && armadilhas.Count > 0; i--)
             {
-                if (armadilhas[i].ESprite.Position.X == auxX && armadilhas[i].ESprite.Position.Y == auxY)
+                if (armadilhas[i].ESprite.Position.X == vec.X && armadilhas[i].ESprite.Position.Y == vec.Y)
                     armadilhas.Remove(armadilhas[i]);
             }
 
@@ -208,15 +200,11 @@ namespace AlvericsQuestEditor
 
         public Armadilha SelecionarArmadilha(float x, float y)
         {
-            int auxX = x >= 0 ? 8 : -8;
-            int auxY = y >= 0 ? 8 : -8;
-
-            auxX = (int)(x / 16) * 16 + auxX;
-            auxY = (int)(y / 16) * 16 + auxY;
+            Vector2f vec = GetPosicaoAjustada(x, y);
 
             foreach (Armadilha armadilha in armadilhas)
             {
-                if (armadilha.ESprite.Position.X == auxX && armadilha.ESprite.Position.Y == auxY)
+                if (armadilha.ESprite.Position.X == vec.X && armadilha.ESprite.Position.Y == vec.Y)
                     return armadilha;
             }
             return null;
@@ -224,18 +212,37 @@ namespace AlvericsQuestEditor
 
         public Mecanismo SelecionarMecanismo(float x, float y)
         {
+            Vector2f vec = GetPosicaoAjustada(x, y);
+
+            foreach (Mecanismo mecanismo in mecanismos)
+            {
+                if (mecanismo.ESprite.Position.X == vec.X && mecanismo.ESprite.Position.Y == vec.Y)
+                    return mecanismo;
+            }
+            return null;
+        }
+
+        public Vector2f GetPosicaoAjustada(float x, float y)
+        {
             int auxX = x >= 0 ? 8 : -8;
             int auxY = y >= 0 ? 8 : -8;
 
             auxX = (int)(x / 16) * 16 + auxX;
             auxY = (int)(y / 16) * 16 + auxY;
 
+            return new Vector2f(auxX, auxY);
+        }
+
+        public void ApagarQuadradoArmadilhas()
+        {
+            foreach (Armadilha armadilha in armadilhas)
+                armadilha.Selecionado = false;
+        }
+
+        public void ApagarQuadradoMecanismos()
+        {
             foreach (Mecanismo mecanismo in mecanismos)
-            {
-                if (mecanismo.ESprite.Position.X == auxX && mecanismo.ESprite.Position.Y == auxY)
-                    return mecanismo;
-            }
-            return null;
+                mecanismo.Selecionado = false;
         }
     }
 }
