@@ -118,7 +118,6 @@ namespace AlvericsQuestEditor
         // Referencia para a armadilha que terá seus atributos modificados
         public Armadilha ArmadilhaAux { get; set; }
 
-
         public Menu(RenderWindow window, View view)
         {
             this.window = window;

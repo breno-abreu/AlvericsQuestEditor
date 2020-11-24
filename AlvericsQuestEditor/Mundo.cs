@@ -30,6 +30,12 @@ namespace AlvericsQuestEditor
         // Referencia para uma armadilha, usada para determinar uma conexão com um mecanismo
         public Armadilha ArmadilhaAux { get; set; }
 
+        // Referencia para a música que terá seus atributos modificados
+        public Musica MusicaAux { get; set; }
+
+        // Lista de músicas
+        private List<Musica> musicas;
+
         public Mundo(RenderWindow window, View view)
         {
             this.window = window;
@@ -37,11 +43,21 @@ namespace AlvericsQuestEditor
             GerenciadorEnt = new GerenciadorEntidades(window, view);
 
             auxVec = new Vector2f();
+            MusicaAux = null;
+            musicas = new List<Musica>();
         }
 
         public void Desenhar()
         {
             GerenciadorEnt.AtualizarEntidades();
+            
+            foreach(Musica musica in musicas)
+                musica.Desenhar(window);
+        }
+
+        public void InserirMusica()
+        {
+            musicas.Add(MusicaAux);
         }
 
         public void Mover(float deltatime, int zoom)
@@ -67,6 +83,28 @@ namespace AlvericsQuestEditor
         public void NovoMundo()
         {
             GerenciadorEnt.LimparListas();
+            musicas.Clear();
+            MecanismoAux = null;
+            ArmadilhaAux = null;
+            MusicaAux = null;
+        }
+
+        public Musica HaMusicaAqui(Vector2f vec)
+        {
+            foreach(Musica musica in musicas)
+            {
+                if ((vec.X >= musica.C1.X && vec.X <= musica.C2.X &&
+                     vec.Y >= musica.C1.Y && vec.Y <= musica.C2.Y) ||
+                    (vec.X <= musica.C1.X && vec.X >= musica.C2.X &&
+                     vec.Y <= musica.C1.Y && vec.Y >= musica.C2.Y))
+                    return musica;
+            }
+            return null;
+        }
+
+        public void ExcluirMusica(Musica m)
+        {
+            musicas.Remove(m);
         }
 
     }

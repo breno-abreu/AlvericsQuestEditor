@@ -175,6 +175,7 @@ namespace AlvericsQuestEditor
             {
                 novoMundo = false;
                 mundo.NovoMundo();
+                gerenciadorArquivos.LimparArquivos();
             }
         }
 
@@ -301,6 +302,34 @@ namespace AlvericsQuestEditor
                             if (mundo.GerenciadorEnt.HaNPCAqui(posMouseMundo.X, posMouseMundo.Y))
                                 gerenciadorArquivos.CarregarDialogo(posMouseMundo);
                             break;
+
+                        case Acao.GerenciarMusicas:
+                            if (mundo.MusicaAux == null)
+                            {
+                                Musica auxM = mundo.HaMusicaAqui(new Vector2f(posMouseMundo.X, posMouseMundo.Y));
+                                if (auxM == null)
+                                {
+                                    mundo.MusicaAux = new Musica()
+                                    {
+                                        C1 = new Vector2f(posMouseMundo.X, posMouseMundo.Y),
+                                        C1Preenchido = true
+                                    };
+                                }
+                                else
+                                    gerenciadorArquivos.CarregarMusica(auxM);
+                            }
+                            else
+                            {
+                                if (!mundo.MusicaAux.C2Preenchido)
+                                {
+                                    mundo.MusicaAux.C2 = new Vector2f(posMouseMundo.X, posMouseMundo.Y);
+                                    mundo.MusicaAux.C2Preenchido = true;
+                                    mundo.MusicaAux.CriarRetangulo();
+                                    mundo.InserirMusica();
+                                    mundo.MusicaAux = null;
+                                }
+                            }
+                            break;
                     }
                 }
             }
@@ -320,6 +349,14 @@ namespace AlvericsQuestEditor
                                     mundo.MecanismoAux.ExcluirArmadilha(armadilha);
                                 }
                             }
+                            break;
+
+
+                        case Acao.GerenciarMusicas:
+                            Musica auxM = mundo.HaMusicaAqui(new Vector2f(posMouseMundo.X, posMouseMundo.Y));
+                            if (auxM != null)
+                                mundo.ExcluirMusica(auxM);
+
                             break;
                     }
                 }

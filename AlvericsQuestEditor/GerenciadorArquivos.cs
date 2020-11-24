@@ -101,5 +101,36 @@ namespace AlvericsQuestEditor
                 Console.WriteLine(ex.Message);
             }
         }
+
+        public void CarregarMusica(Musica m)
+        {
+            string titulo = "";
+
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                InitialDirectory = @"C:\",
+                Title = "Carregar Arquivo de Musica",
+
+                CheckFileExists = true,
+                CheckPathExists = true,
+
+                DefaultExt = "txt",
+                Filter = "audio files (*.mp3)|*.mp3",
+                RestoreDirectory = true,
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                titulo = openFileDialog.SafeFileName;
+                m.Titulo = titulo;
+                Console.WriteLine(m.Titulo);
+            }
+        }
+
+        public void LimparArquivos()
+        {
+            eventos = "";
+            dialogos.Clear();
+        }
     }
 }
