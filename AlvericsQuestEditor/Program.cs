@@ -10,7 +10,7 @@ namespace AlvericsQuestEditor
 {
     public static class Informacoes
     {
-        public static Vector2i qtdEntidades = new Vector2i(5, 9);
+        public static Vector2i qtdEntidades = new Vector2i(5, 37);
         public static string entidadesImgPath = @"all.png";
         public static float propViewMenu = .3f;
         public static float propViewMundo = .7f;
@@ -38,6 +38,7 @@ namespace AlvericsQuestEditor
         private Clock clock;
         private const float velViewMenu = 50000f;
         private Vector2f coordViewMenu;
+        private float yViewMenuInicial;
         private Mundo mundo;
         private int zoom;
         private Acao acao;
@@ -45,6 +46,7 @@ namespace AlvericsQuestEditor
         private Vector2f posMouseMundo;
         private bool novoMundo;
         private GerenciadorArquivos gerenciadorArquivos;
+        private int contScrollMenu;
 
         public Editor()
         {
@@ -91,11 +93,13 @@ namespace AlvericsQuestEditor
             clock = new Clock();
 
             coordViewMenu = viewMenu.Center;
+            yViewMenuInicial = coordViewMenu.Y;
             bloqueandoAcoes = false;
             posMouseMundo = new Vector2f();
             novoMundo = false;
             gerenciadorArquivos = new GerenciadorArquivos();
-            
+            contScrollMenu = 0;
+
             /* Inclui um método para os event handlers: */
             // Método chamado quando ó botão de finalizar o programa é pressionado
             window.Closed += Window_Close;
@@ -176,6 +180,7 @@ namespace AlvericsQuestEditor
                 novoMundo = false;
                 mundo.NovoMundo();
                 gerenciadorArquivos.LimparArquivos();
+                viewMundo.Center = new Vector2f(0, 0);
             }
         }
 
@@ -267,35 +272,67 @@ namespace AlvericsQuestEditor
                         case Acao.GerenciarConexao:
                             Armadilha aAux = mundo.GerenciadorEnt.SelecionarArmadilha(posMouseMundo.X, posMouseMundo.Y);
                             Mecanismo mAux = mundo.GerenciadorEnt.SelecionarMecanismo(posMouseMundo.X, posMouseMundo.Y);
+                            Escada eAux = mundo.GerenciadorEnt.SelecionarEscada(posMouseMundo.X, posMouseMundo.Y);
 
-                            if (aAux != null && mAux == null)
+                            if(eAux == null)
                             {
-                                mundo.ArmadilhaAux = aAux;
-                            }
+                                mundo.EscadaAux1 = null;
+                                mundo.EscadaAux2 = null;
+                                mundo.GerenciadorEnt.ApagarQuadradoEscadas();
 
-                            else if (aAux == null && mAux != null)
-                            {
-                                mundo.GerenciadorEnt.ApagarQuadradoMecanismos();
-                                mundo.GerenciadorEnt.ApagarQuadradoArmadilhas();
-                                mundo.MecanismoAux = mAux;
-                                mundo.MecanismoAux.Selecionado = true;
-                                mundo.MecanismoAux.ApagarQuadradoArmadilhas();
-                                mundo.MecanismoAux.DesenharQuadradoArmadilhas();
-                            }
+                                if (aAux != null && mAux == null)
+                                {
+                                    mundo.ArmadilhaAux = aAux;
+                                }
 
+                                else if (aAux == null && mAux != null)
+                                {
+                                    mundo.GerenciadorEnt.ApagarQuadradoMecanismos();
+                                    mundo.GerenciadorEnt.ApagarQuadradoArmadilhas();
+                                    mundo.MecanismoAux = mAux;
+                                    mundo.MecanismoAux.Selecionado = true;
+                                    mundo.MecanismoAux.ApagarQuadradoArmadilhas();
+                                    mundo.MecanismoAux.DesenharQuadradoArmadilhas();
+                                }
+
+                                else
+                                {
+                                    mundo.ArmadilhaAux = null;
+                                    mundo.MecanismoAux = null;
+                                    mundo.GerenciadorEnt.ApagarQuadradoArmadilhas();
+                                    mundo.GerenciadorEnt.ApagarQuadradoMecanismos();
+                                }
+
+                                if (mundo.ArmadilhaAux != null && mundo.MecanismoAux != null)
+                                {
+                                    mundo.MecanismoAux.IncluirArmadilha(mundo.ArmadilhaAux);
+                                    mundo.MecanismoAux.DesenharQuadradoArmadilhas();
+                                }
+                            }
                             else
                             {
-                                mundo.ArmadilhaAux = null;
-                                mundo.MecanismoAux = null;
-                                mundo.GerenciadorEnt.ApagarQuadradoArmadilhas();
-                                mundo.GerenciadorEnt.ApagarQuadradoMecanismos();
-                            }
+                                if (mundo.EscadaAux1 == null)
+                                {
+                                    mundo.EscadaAux1 = eAux;
 
-                            if (mundo.ArmadilhaAux != null && mundo.MecanismoAux != null)
-                            {
-                                mundo.MecanismoAux.IncluirArmadilha(mundo.ArmadilhaAux);
-                                mundo.MecanismoAux.DesenharQuadradoArmadilhas();
+                                    mundo.EscadaAux1.Selecionado = true;
+
+                                    if (mundo.EscadaAux1.EscadaConn != null)
+                                    {
+                                        mundo.EscadaAux2 = mundo.EscadaAux1.EscadaConn;
+                                        mundo.EscadaAux2.Selecionado = true;
+                                    }
+                                   
+                                }
+                                else if(mundo.EscadaAux1 != null && mundo.EscadaAux2 == null)
+                                {
+                                    mundo.EscadaAux2 = eAux;
+                                    mundo.EscadaAux1.EscadaConn = mundo.EscadaAux2;
+                                    mundo.EscadaAux2.EscadaConn = mundo.EscadaAux1;
+                                    mundo.EscadaAux2.Selecionado = true;
+                                }
                             }
+                            
                             break;
 
                         case Acao.GerenciarDialogos:
@@ -343,11 +380,19 @@ namespace AlvericsQuestEditor
                             if(mundo.MecanismoAux != null)
                             {
                                 Armadilha armadilha = mundo.GerenciadorEnt.SelecionarArmadilha(posMouseMundo.X, posMouseMundo.Y);
+
                                 if (armadilha != null)
                                 {
                                     armadilha.Selecionado = false;
                                     mundo.MecanismoAux.ExcluirArmadilha(armadilha);
                                 }
+                            }
+                            Escada escada = mundo.GerenciadorEnt.SelecionarEscada(posMouseMundo.X, posMouseMundo.Y);
+                            if (escada != null)
+                            {
+                                escada.Selecionado = false;
+                                escada.EscadaConn = null;
+                                mundo.GerenciadorEnt.ExcluirConecaoEscada(escada);
                             }
                             break;
 
@@ -368,13 +413,13 @@ namespace AlvericsQuestEditor
             // Caso seja ativado no menu
             if(Mouse.GetPosition(window).X >= window.Size.X * Informacoes.propViewMundo)
             {
-                if (e.Delta > 0)
+                if (e.Delta == 1 && coordViewMenu.Y >= yViewMenuInicial)
                 {
                     coordViewMenu.Y -= velViewMenu * deltatime;
                     viewMenu.Center = coordViewMenu;
                     menu.AtualizarPosicaoBackground(-velViewMenu * deltatime);
                 }
-                else if (e.Delta < 0)
+                else if (e.Delta == -1)
                 {
                     coordViewMenu.Y += velViewMenu * deltatime;
                     viewMenu.Center = coordViewMenu;
@@ -385,13 +430,13 @@ namespace AlvericsQuestEditor
             // Caso seja ativado no mundo
             else
             {
-                if (e.Delta > 0)
+                if (e.Delta == 1)
                 {
                     viewMundo.Zoom(0.9f);
                     zoom++;
                 }
                     
-                else if (e.Delta < 0)
+                else if (e.Delta == -1)
                 {
                     viewMundo.Zoom(1.1f);
                     zoom--;

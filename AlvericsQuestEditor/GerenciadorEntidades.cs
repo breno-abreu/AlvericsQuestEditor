@@ -28,6 +28,9 @@ namespace AlvericsQuestEditor
         // Lista de mecanismos
         private List<Mecanismo> mecanismos;
 
+        // Lista de escadas
+        private List<Escada> escadas;
+
         // Lista de NPCs
         private List<Entidade> npcs;
 
@@ -55,6 +58,7 @@ namespace AlvericsQuestEditor
             armadilhas = new List<Armadilha>();
             mecanismos = new List<Mecanismo>();
             npcs = new List<Entidade>();
+            escadas = new List<Escada>();
 
             try
             {
@@ -76,7 +80,11 @@ namespace AlvericsQuestEditor
 
             TipoEntidade tipo;
 
-            if (PosicaoEntidade.X == 1 && PosicaoEntidade.Y == 0)
+            if ((PosicaoEntidade.X == 1 && PosicaoEntidade.Y == 9) ||
+                (PosicaoEntidade.X == 3 && PosicaoEntidade.Y == 9) ||
+                (PosicaoEntidade.X == 0 && PosicaoEntidade.Y == 32) ||
+                (PosicaoEntidade.X == 2 && PosicaoEntidade.Y == 0) ||
+                (PosicaoEntidade.X == 3 && PosicaoEntidade.Y == 0))
                 tipo = TipoEntidade.Intangivel;
             else
                 tipo = TipoEntidade.Tangivel;
@@ -121,6 +129,14 @@ namespace AlvericsQuestEditor
                     Entidade e = new Entidade(s, tipo);
                     entidadesTangiveis.Add(e);
                     npcs.Add(e);
+                }
+                else if(PosicaoEntidade.Y == 6 && (PosicaoEntidade.X == 2 ||
+                                                   PosicaoEntidade.X == 3 ||
+                                                   PosicaoEntidade.X == 4))
+                {
+                    Escada e = new Escada(s, tipo);
+                    entidadesTangiveis.Add(e);
+                    escadas.Add(e);
                 }
                 else
                 {
@@ -168,6 +184,12 @@ namespace AlvericsQuestEditor
                     npcs.Remove(npcs[i]);
             }
 
+            for (int i = escadas.Count - 1; i >= 0 && escadas.Count > 0; i--)
+            {
+                if (escadas[i].ESprite.Position.X == vec.X && escadas[i].ESprite.Position.Y == vec.Y)
+                    escadas.Remove(escadas[i]);
+            }
+
         }
 
         public void AtualizarEntidades()
@@ -213,6 +235,7 @@ namespace AlvericsQuestEditor
             armadilhas.Clear();
             mecanismos.Clear();
             npcs.Clear();
+            escadas.Clear();
         }
 
         public Armadilha SelecionarArmadilha(float x, float y)
@@ -235,6 +258,18 @@ namespace AlvericsQuestEditor
             {
                 if (mecanismo.ESprite.Position.X == vec.X && mecanismo.ESprite.Position.Y == vec.Y)
                     return mecanismo;
+            }
+            return null;
+        }
+
+        public Escada SelecionarEscada(float x, float y)
+        {
+            Vector2f vec = GetPosicaoAjustada(x, y);
+
+            foreach (Escada escada in escadas)
+            {
+                if (escada.ESprite.Position.X == vec.X && escada.ESprite.Position.Y == vec.Y)
+                    return escada;
             }
             return null;
         }
@@ -273,6 +308,20 @@ namespace AlvericsQuestEditor
         {
             foreach (Mecanismo mecanismo in mecanismos)
                 mecanismo.Selecionado = false;
+        }
+        public void ApagarQuadradoEscadas()
+        {
+            foreach (Escada escada in escadas)
+                escada.Selecionado = false;
+        }
+
+        public void ExcluirConecaoEscada(Escada e)
+        {
+            foreach(Escada escada in escadas)
+            {
+                if (escada.EscadaConn == e)
+                    escada.EscadaConn = null;
+            }
         }
     }
 }

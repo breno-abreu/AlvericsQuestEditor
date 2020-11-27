@@ -85,7 +85,7 @@ namespace AlvericsQuestEditor
 
                     foreach(Dialogo dialogo in dialogos)
                     {
-                        if (dialogo.posNPC.X == auxX && dialogo.posNPC.Y == auxY)
+                        if (dialogo.PosNPC.X == auxX && dialogo.PosNPC.Y == auxY)
                             auxD = dialogo;
                     }
 
@@ -93,7 +93,7 @@ namespace AlvericsQuestEditor
                         dialogos.Add(new Dialogo(new Vector2f(auxX, auxY), reader.ReadToEnd()));
 
                     else
-                        auxD.texto = reader.ReadToEnd();
+                        auxD.Texto = reader.ReadToEnd();
                 }
             }
             catch (Exception ex)

@@ -33,6 +33,9 @@ namespace AlvericsQuestEditor
         // Referencia para a música que terá seus atributos modificados
         public Musica MusicaAux { get; set; }
 
+        public Escada EscadaAux1 { get; set; }
+        public Escada EscadaAux2 { get; set; }
+
         // Lista de músicas
         private List<Musica> musicas;
 
@@ -45,6 +48,8 @@ namespace AlvericsQuestEditor
             auxVec = new Vector2f();
             MusicaAux = null;
             musicas = new List<Musica>();
+            EscadaAux1 = null;
+            EscadaAux2 = null;
         }
 
         public void Desenhar()
