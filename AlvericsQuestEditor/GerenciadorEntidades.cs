@@ -74,17 +74,20 @@ namespace AlvericsQuestEditor
             PosicaoEntidade = new Vector2i();
         }
 
-        public void InserirEntidade(float x, float y)
+        public void InserirEntidade(float x, float y, int posicaoEntidadeX=-1, int posicaoEntidadeY=-1)
         {
             Vector2f vec = GetPosicaoAjustada(x, y);
 
             TipoEntidade tipo;
 
-            if ((PosicaoEntidade.X == 1 && PosicaoEntidade.Y == 9) ||
-                (PosicaoEntidade.X == 3 && PosicaoEntidade.Y == 9) ||
-                (PosicaoEntidade.X == 0 && PosicaoEntidade.Y == 32) ||
-                (PosicaoEntidade.X == 2 && PosicaoEntidade.Y == 0) ||
-                (PosicaoEntidade.X == 3 && PosicaoEntidade.Y == 0))
+            if (posicaoEntidadeX == -1) posicaoEntidadeX = PosicaoEntidade.X;
+            if (posicaoEntidadeY == -1) posicaoEntidadeY = PosicaoEntidade.Y;
+
+            if ((posicaoEntidadeX == 1 && posicaoEntidadeY == 9) ||
+                (posicaoEntidadeX == 3 && posicaoEntidadeY == 9) ||
+                (posicaoEntidadeX == 0 && posicaoEntidadeY == 32) ||
+                (posicaoEntidadeX == 2 && posicaoEntidadeY == 0) ||
+                (posicaoEntidadeX == 3 && posicaoEntidadeY == 0))
                 tipo = TipoEntidade.Intangivel;
             else
                 tipo = TipoEntidade.Tangivel;
@@ -96,7 +99,7 @@ namespace AlvericsQuestEditor
                 int altura = (int)(spritePrincipal.Texture.Size.Y / Informacoes.qtdEntidades.Y);
 
                 // Encontra e recorta na textura principal a nova textura da entidade baseada na coluna e na linha recebidas
-                IntRect rect = new IntRect(PosicaoEntidade.X * comprimento, PosicaoEntidade.Y * altura, comprimento, altura);
+                IntRect rect = new IntRect(posicaoEntidadeX * comprimento, posicaoEntidadeY * altura, comprimento, altura);
                 spritePrincipal.TextureRect = rect;
                 Sprite s = new Sprite(spritePrincipal);
                 s.Origin = new Vector2f(comprimento / 2, altura / 2);
@@ -106,41 +109,41 @@ namespace AlvericsQuestEditor
                 //entidade aux = new Entidade(s, tipo);
                 //entidades.Add(aux);
 
-                if((PosicaoEntidade.X >= 1 && PosicaoEntidade.X <= 4) && PosicaoEntidade.Y == 4)
+                if((posicaoEntidadeX >= 1 && posicaoEntidadeX <= 4) && posicaoEntidadeY == 4)
                 {
-                    Armadilha a = new Armadilha(s, tipo, TipoArmadilha.Atirador, PosicaoEntidade.X, PosicaoEntidade.Y);
+                    Armadilha a = new Armadilha(s, tipo, TipoArmadilha.Atirador, posicaoEntidadeX, posicaoEntidadeY);
                     entidadesTangiveis.Add(a);
                     armadilhas.Add(a);
                 }
-                else if(PosicaoEntidade.X == 4 && PosicaoEntidade.Y == 3)
+                else if(posicaoEntidadeX == 4 && posicaoEntidadeY == 3)
                 {
-                    Armadilha a = new Armadilha(s, tipo, TipoArmadilha.Espinhos, PosicaoEntidade.X, PosicaoEntidade.Y);
+                    Armadilha a = new Armadilha(s, tipo, TipoArmadilha.Espinhos, posicaoEntidadeX, posicaoEntidadeY);
                     entidadesTangiveis.Add(a);
                     armadilhas.Add(a);
                 }
-                else if (PosicaoEntidade.X == 0 && (PosicaoEntidade.Y == 4 || PosicaoEntidade.Y == 5))
+                else if (posicaoEntidadeX == 0 && (posicaoEntidadeY == 4 || posicaoEntidadeY == 5))
                 {
-                    Mecanismo m = new Mecanismo(s, tipo, PosicaoEntidade.X, PosicaoEntidade.Y);
+                    Mecanismo m = new Mecanismo(s, tipo, posicaoEntidadeX, posicaoEntidadeY);
                     entidadesTangiveis.Add(m);
                     mecanismos.Add(m);
                 }
-                else if (PosicaoEntidade.X == 0 && PosicaoEntidade.Y == 1)
+                else if (posicaoEntidadeX == 0 && posicaoEntidadeY == 1)
                 {
-                    Entidade e = new Entidade(s, tipo, PosicaoEntidade.X, PosicaoEntidade.Y);
+                    Entidade e = new Entidade(s, tipo, posicaoEntidadeX, posicaoEntidadeY);
                     entidadesTangiveis.Add(e);
                     npcs.Add(e);
                 }
-                else if(PosicaoEntidade.Y == 6 && (PosicaoEntidade.X == 2 ||
-                                                   PosicaoEntidade.X == 3 ||
-                                                   PosicaoEntidade.X == 4))
+                else if(posicaoEntidadeY == 6 && (posicaoEntidadeX == 2 ||
+                                                  posicaoEntidadeX == 3 ||
+                                                  posicaoEntidadeX == 4))
                 {
-                    Escada e = new Escada(s, tipo, PosicaoEntidade.X, PosicaoEntidade.Y);
+                    Escada e = new Escada(s, tipo, posicaoEntidadeX, posicaoEntidadeY);
                     entidadesTangiveis.Add(e);
                     escadas.Add(e);
                 }
                 else
                 {
-                    Entidade aux = new Entidade(s, tipo, PosicaoEntidade.X, PosicaoEntidade.Y);
+                    Entidade aux = new Entidade(s, tipo, posicaoEntidadeX, posicaoEntidadeY);
 
                     if (tipo == TipoEntidade.Intangivel)
                         entidadesIntangiveis.Add(aux);

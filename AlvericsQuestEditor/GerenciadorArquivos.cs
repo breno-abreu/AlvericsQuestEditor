@@ -198,8 +198,12 @@ namespace AlvericsQuestEditor
                     {
                         writer.Write(escada.ESprite.Position.X);
                         writer.Write(escada.ESprite.Position.Y);
-                        writer.Write(escada.EscadaConn.ESprite.Position.X);
-                        writer.Write(escada.EscadaConn.ESprite.Position.Y);
+
+                        if(escada.EscadaConn != null)
+                        {
+                            writer.Write(escada.EscadaConn.ESprite.Position.X);
+                            writer.Write(escada.EscadaConn.ESprite.Position.Y);
+                        }
                     }
                 }
             }
@@ -211,7 +215,47 @@ namespace AlvericsQuestEditor
 
         public void CarregarMundo(GerenciadorEntidades ger)
         {
+            string path = "";
 
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                InitialDirectory = @"C:\",
+                Title = "Carregar Mundo",
+
+                CheckFileExists = true,
+                CheckPathExists = true,
+
+                DefaultExt = "aql",
+                Filter = "aql files (*.aql)|*.aql",
+                RestoreDirectory = true,
+            };
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+                path = openFileDialog.FileName;
+
+            try
+            {
+                ger.LimparListas();
+                using FileStream input = File.OpenRead(path);
+                using (BinaryReader reader = new BinaryReader(input))
+                {
+                    int etCount = reader.ReadInt32();
+                    int eiCount = reader.ReadInt32();
+                    int mecCount = reader.ReadInt32();
+                    int armCount = reader.ReadInt32();
+                    int escCount = reader.ReadInt32();
+
+                    for (int i = 0; i < etCount; i++)
+                        ger.InserirEntidade(reader.ReadSingle(), reader.ReadSingle(), reader.ReadInt32(), reader.ReadInt32());
+
+                    for (int i = 0; i < eiCount; i++)
+                        ger.InserirEntidade(reader.ReadSingle(), reader.ReadSingle(), reader.ReadInt32(), reader.ReadInt32());
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }
