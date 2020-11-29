@@ -16,8 +16,8 @@ namespace AlvericsQuestEditor
 
         private RectangleShape rect;
 
-        public Armadilha(Sprite sprite, TipoEntidade tipo, TipoArmadilha tipoArmadilha):
-            base(sprite, tipo)
+        public Armadilha(Sprite sprite, TipoEntidade tipo, TipoArmadilha tipoArmadilha, int posicaoSpriteX, int posicaoSpriteY) :
+            base(sprite, tipo, posicaoSpriteX, posicaoSpriteY)
         {
             TempoInicial = 0;
             TempoEntreAtivacoes = 0;

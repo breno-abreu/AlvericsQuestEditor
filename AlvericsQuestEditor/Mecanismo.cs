@@ -8,13 +8,13 @@ namespace AlvericsQuestEditor
 {
     class Mecanismo : Entidade
     {
-        private List<Armadilha> armadilhas;
+        public List<Armadilha> armadilhas { get; set; }
         public bool Selecionado { get; set; }
 
         private RectangleShape rect;
 
-        public Mecanismo(Sprite sprite, TipoEntidade tipo) :
-            base(sprite, tipo)
+        public Mecanismo(Sprite sprite, TipoEntidade tipo, int posicaoSpriteX, int posicaoSpriteY) :
+            base(sprite, tipo, posicaoSpriteX, posicaoSpriteY)
         {
             armadilhas = new List<Armadilha>();
             Selecionado = false;

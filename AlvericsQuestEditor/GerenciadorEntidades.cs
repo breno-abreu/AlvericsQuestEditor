@@ -17,19 +17,19 @@ namespace AlvericsQuestEditor
         private List<Entidade> entidades;
 
         // Lista contendo as entidades intangíveis
-        private List<Entidade> entidadesIntangiveis;
+        public List<Entidade> entidadesIntangiveis { get; set; }
 
         // Lista contendo as entidades tangíveis
-        private List<Entidade> entidadesTangiveis;
+        public List<Entidade> entidadesTangiveis { get; set; }
 
         // Lista de armadilhas
-        private List<Armadilha> armadilhas;
+        public List<Armadilha> armadilhas { get; set; }
 
         // Lista de mecanismos
-        private List<Mecanismo> mecanismos;
+        public List<Mecanismo> mecanismos { get; set; }
 
         // Lista de escadas
-        private List<Escada> escadas;
+        public List<Escada> escadas { get; set; }
 
         // Lista de NPCs
         private List<Entidade> npcs;
@@ -108,25 +108,25 @@ namespace AlvericsQuestEditor
 
                 if((PosicaoEntidade.X >= 1 && PosicaoEntidade.X <= 4) && PosicaoEntidade.Y == 4)
                 {
-                    Armadilha a = new Armadilha(s, tipo, TipoArmadilha.Atirador);
+                    Armadilha a = new Armadilha(s, tipo, TipoArmadilha.Atirador, PosicaoEntidade.X, PosicaoEntidade.Y);
                     entidadesTangiveis.Add(a);
                     armadilhas.Add(a);
                 }
                 else if(PosicaoEntidade.X == 4 && PosicaoEntidade.Y == 3)
                 {
-                    Armadilha a = new Armadilha(s, tipo, TipoArmadilha.Espinhos);
+                    Armadilha a = new Armadilha(s, tipo, TipoArmadilha.Espinhos, PosicaoEntidade.X, PosicaoEntidade.Y);
                     entidadesTangiveis.Add(a);
                     armadilhas.Add(a);
                 }
                 else if (PosicaoEntidade.X == 0 && (PosicaoEntidade.Y == 4 || PosicaoEntidade.Y == 5))
                 {
-                    Mecanismo m = new Mecanismo(s, tipo);
+                    Mecanismo m = new Mecanismo(s, tipo, PosicaoEntidade.X, PosicaoEntidade.Y);
                     entidadesTangiveis.Add(m);
                     mecanismos.Add(m);
                 }
                 else if (PosicaoEntidade.X == 0 && PosicaoEntidade.Y == 1)
                 {
-                    Entidade e = new Entidade(s, tipo);
+                    Entidade e = new Entidade(s, tipo, PosicaoEntidade.X, PosicaoEntidade.Y);
                     entidadesTangiveis.Add(e);
                     npcs.Add(e);
                 }
@@ -134,13 +134,13 @@ namespace AlvericsQuestEditor
                                                    PosicaoEntidade.X == 3 ||
                                                    PosicaoEntidade.X == 4))
                 {
-                    Escada e = new Escada(s, tipo);
+                    Escada e = new Escada(s, tipo, PosicaoEntidade.X, PosicaoEntidade.Y);
                     entidadesTangiveis.Add(e);
                     escadas.Add(e);
                 }
                 else
                 {
-                    Entidade aux = new Entidade(s, tipo);
+                    Entidade aux = new Entidade(s, tipo, PosicaoEntidade.X, PosicaoEntidade.Y);
 
                     if (tipo == TipoEntidade.Intangivel)
                         entidadesIntangiveis.Add(aux);

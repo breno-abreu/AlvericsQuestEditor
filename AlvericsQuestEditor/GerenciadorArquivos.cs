@@ -123,7 +123,7 @@ namespace AlvericsQuestEditor
             {
                 titulo = openFileDialog.SafeFileName;
                 m.Titulo = titulo;
-                Console.WriteLine(m.Titulo);
+                //Console.WriteLine(m.Titulo);
             }
         }
 
@@ -131,6 +131,87 @@ namespace AlvericsQuestEditor
         {
             eventos = "";
             dialogos.Clear();
+        }
+
+        public void SalvarMundo(List<Entidade> et, List<Entidade> ei, List<Armadilha> arm, List<Mecanismo> mec, List<Escada> esc)
+        {
+            string path = "";
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "aql files (*.aql)|*.aql";
+            saveFileDialog.RestoreDirectory = true;
+
+            if(saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                path = saveFileDialog.FileName; 
+            }
+
+            try
+            {
+                using FileStream output = File.Create(path);
+                using (BinaryWriter writer = new BinaryWriter(output))
+                {
+                    writer.Write(et.Count);
+                    writer.Write(ei.Count);
+                    writer.Write(mec.Count);
+                    writer.Write(arm.Count);
+                    writer.Write(esc.Count);
+
+                    foreach (Entidade entidade in et)
+                    {
+                        writer.Write(entidade.ESprite.Position.X);
+                        writer.Write(entidade.ESprite.Position.Y);
+                        writer.Write(entidade.posicaoSprite.X);
+                        writer.Write(entidade.posicaoSprite.Y);
+                    }
+
+                    foreach (Entidade entidade in ei)
+                    {
+                        writer.Write(entidade.ESprite.Position.X);
+                        writer.Write(entidade.ESprite.Position.Y);
+                        writer.Write(entidade.posicaoSprite.X);
+                        writer.Write(entidade.posicaoSprite.Y);
+                    }
+
+                    foreach (Armadilha armadilha in arm)
+                    {
+                        writer.Write(armadilha.ESprite.Position.X);
+                        writer.Write(armadilha.ESprite.Position.Y);
+                        writer.Write(armadilha.TempoInicial);
+                        writer.Write(armadilha.TempoEntreAtivacoes);
+                        writer.Write(armadilha.TempoAtivo);
+                    }
+
+                    foreach (Mecanismo mecanismo in mec)
+                    {
+                        writer.Write(mecanismo.ESprite.Position.X);
+                        writer.Write(mecanismo.ESprite.Position.Y);
+                        writer.Write(mecanismo.armadilhas.Count);
+                        foreach(Armadilha armadilha in mecanismo.armadilhas)
+                        {
+                            writer.Write(armadilha.ESprite.Position.X);
+                            writer.Write(armadilha.ESprite.Position.Y);
+                        }
+                    }
+
+                    foreach (Escada escada in esc)
+                    {
+                        writer.Write(escada.ESprite.Position.X);
+                        writer.Write(escada.ESprite.Position.Y);
+                        writer.Write(escada.EscadaConn.ESprite.Position.X);
+                        writer.Write(escada.EscadaConn.ESprite.Position.Y);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        public void CarregarMundo(GerenciadorEntidades ger)
+        {
+
         }
     }
 }

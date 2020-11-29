@@ -12,8 +12,8 @@ namespace AlvericsQuestEditor
         public bool Selecionado { get; set; }
         private RectangleShape rect;
 
-        public Escada(Sprite sprite, TipoEntidade tipo):
-            base(sprite, tipo)
+        public Escada(Sprite sprite, TipoEntidade tipo, int posicaoSpriteX, int posicaoSpriteY) :
+            base(sprite, tipo, posicaoSpriteX, posicaoSpriteY)
         {
             EscadaConn = null;
 

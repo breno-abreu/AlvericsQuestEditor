@@ -46,7 +46,6 @@ namespace AlvericsQuestEditor
         private Vector2f posMouseMundo;
         private bool novoMundo;
         private GerenciadorArquivos gerenciadorArquivos;
-        private int contScrollMenu;
 
         public Editor()
         {
@@ -98,7 +97,6 @@ namespace AlvericsQuestEditor
             posMouseMundo = new Vector2f();
             novoMundo = false;
             gerenciadorArquivos = new GerenciadorArquivos();
-            contScrollMenu = 0;
 
             /* Inclui um método para os event handlers: */
             // Método chamado quando ó botão de finalizar o programa é pressionado
@@ -252,6 +250,15 @@ namespace AlvericsQuestEditor
                             if(acao == Acao.GerenciarEventos)
                                 gerenciadorArquivos.CarregarEventos();
 
+                            if (acao == Acao.Salvar)
+                                gerenciadorArquivos.SalvarMundo(mundo.GerenciadorEnt.entidadesTangiveis,
+                                                                mundo.GerenciadorEnt.entidadesIntangiveis,
+                                                                mundo.GerenciadorEnt.armadilhas,
+                                                                mundo.GerenciadorEnt.mecanismos,
+                                                                mundo.GerenciadorEnt.escadas);
+                            if (acao == Acao.Carregar)
+                                gerenciadorArquivos.CarregarMundo(mundo.GerenciadorEnt);
+                                
                             break;
                     }
                 }
