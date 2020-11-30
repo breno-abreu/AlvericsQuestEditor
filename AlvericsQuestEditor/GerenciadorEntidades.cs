@@ -322,8 +322,8 @@ namespace AlvericsQuestEditor
         {
             foreach(Escada escada in escadas)
             {
-                if (escada.EscadaConn == e)
-                    escada.EscadaConn = null;
+                if (escada.EscadaCon == e)
+                    escada.EscadaCon = null;
             }
         }
     }

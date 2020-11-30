@@ -257,7 +257,13 @@ namespace AlvericsQuestEditor
                                                                 mundo.GerenciadorEnt.mecanismos,
                                                                 mundo.GerenciadorEnt.escadas);
                             if (acao == Acao.Carregar)
+                            {
+                                zoom = 10;
+                                AplicarZoomMundo();
+                                viewMundo.Center = new Vector2f(0, 0);
                                 gerenciadorArquivos.CarregarMundo(mundo.GerenciadorEnt);
+                            }
+                                
                                 
                             break;
                     }
@@ -324,9 +330,9 @@ namespace AlvericsQuestEditor
 
                                     mundo.EscadaAux1.Selecionado = true;
 
-                                    if (mundo.EscadaAux1.EscadaConn != null)
+                                    if (mundo.EscadaAux1.EscadaCon != null)
                                     {
-                                        mundo.EscadaAux2 = mundo.EscadaAux1.EscadaConn;
+                                        mundo.EscadaAux2 = mundo.EscadaAux1.EscadaCon;
                                         mundo.EscadaAux2.Selecionado = true;
                                     }
                                    
@@ -334,8 +340,8 @@ namespace AlvericsQuestEditor
                                 else if(mundo.EscadaAux1 != null && mundo.EscadaAux2 == null)
                                 {
                                     mundo.EscadaAux2 = eAux;
-                                    mundo.EscadaAux1.EscadaConn = mundo.EscadaAux2;
-                                    mundo.EscadaAux2.EscadaConn = mundo.EscadaAux1;
+                                    mundo.EscadaAux1.EscadaCon = mundo.EscadaAux2;
+                                    mundo.EscadaAux2.EscadaCon = mundo.EscadaAux1;
                                     mundo.EscadaAux2.Selecionado = true;
                                 }
                             }
@@ -398,7 +404,7 @@ namespace AlvericsQuestEditor
                             if (escada != null)
                             {
                                 escada.Selecionado = false;
-                                escada.EscadaConn = null;
+                                escada.EscadaCon = null;
                                 mundo.GerenciadorEnt.ExcluirConecaoEscada(escada);
                             }
                             break;

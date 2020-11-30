@@ -5,9 +5,10 @@ using SFML.System;
 
 namespace AlvericsQuestEditor
 {
-    /* Classe do menu do editor. Contém os botões que irão engatilhar eventos. */
     class Menu
     {
+        /* Classe do menu do editor. Contém os botões que irão engatilhar eventos. */
+
         // Retângulo para o background do menu
         private RectangleShape background;
 
