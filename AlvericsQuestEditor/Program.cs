@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using SFML.Graphics;
 using SFML.System;
@@ -10,9 +9,18 @@ namespace AlvericsQuestEditor
 {
     public static class Informacoes
     {
+        /* Classe contendo informações sobre o programa */
+
+        // Indica a quantidade de linhas e colunas na matriz de entidades principal
         public static Vector2i qtdEntidades = new Vector2i(5, 37);
+
+        // Indica o nome do arquivo contendo a imagem que servirá de base para a matriz de entidade principal
         public static string entidadesImgPath = @"all.png";
+
+        // Proporção do menu em relação ao tamanho da tela
         public static float propViewMenu = .3f;
+
+        // Proporção do mundo em relação ao tamanho da tela
         public static float propViewMundo = .7f;
     }
 
@@ -21,6 +29,8 @@ namespace AlvericsQuestEditor
         [STAThread]
         static void Main(string[] args)
         {
+            /* Cria o editor e o executa */ 
+
             Editor editor = new Editor();
             editor.Executar();
         }
@@ -28,33 +38,73 @@ namespace AlvericsQuestEditor
 
     class Editor
     {
+        /* Classe principal do editor */
+
+        // Referência para a janela do programa
         private RenderWindow window;
+
+        // Porção da tela separada para o mundo
         private SFML.Graphics.View viewMundo;
+
+        // Porção da tela separada para o menu
         private SFML.Graphics.View viewMenu;
+
+        // Menu principal
         private Menu menu;
+
+        // Comprimento inicial da tela
         private const uint comprimentoInicialTela = 1600;
+
+        // Algura inicial da tela
         private const uint alturaInicialTela = 900;
+
+        // Tempo em segundos entre frames
         private float deltatime;
+
+        // Relógio para calcular o tempo em segundos entre frames
         private Clock clock;
+
+        // Velocidade da rolagem da roda do mouse
         private const float velViewMenu = 50000f;
+
+        // Coordenadas da view do menu
         private Vector2f coordViewMenu;
+
+        // Posição inicial em Y da view do menu
         private float yViewMenuInicial;
+
+        // Mundo onde serão aplicados os objetos
         private Mundo mundo;
+
+        // Fator de zoom da view do mundo
         private int zoom;
+
+        // Acao indicada pelo jogador, mudará os eventos do programa
         private Acao acao;
+
+        // Indica que outras ações não podem ser efetuadas se essa variável for verdadeira
         private bool bloqueandoAcoes;
+
+        // Posição do mouse em relação ao mundo
         private Vector2f posMouseMundo;
+
+        // Indica se um novo mundo deve ser criado
         private bool novoMundo;
+
+        // Gerenciador de arquivos para salvar e carregar arquivos
         private GerenciadorArquivos gerenciadorArquivos;
 
         public Editor()
         {
+            /* Inicializa o editor */
+
             // Inicializa a janela do programa
             window = new RenderWindow(new VideoMode(comprimentoInicialTela, alturaInicialTela), 
                                       "Alveric's Quest Editor", Styles.Default);
 
             // Cria uma view para o mundo
             viewMundo = new SFML.Graphics.View();
+
             // Seleciona a fração da tela ocupada por essa view
             viewMundo.Viewport = new FloatRect(0f, 0f, Informacoes.propViewMundo, 1f);
             viewMundo.Size = new Vector2f(window.Size.X * Informacoes.propViewMundo, window.Size.Y);
@@ -62,6 +112,7 @@ namespace AlvericsQuestEditor
 
             // Cria uma view para o menu
             viewMenu = new SFML.Graphics.View();
+
             // Seleciona a fração da tela ocupada por essa view
             viewMenu.Viewport = new FloatRect(Informacoes.propViewMundo, 0f, Informacoes.propViewMenu, 1f);
             viewMenu.Size = new Vector2f(window.Size.X * Informacoes.propViewMenu, window.Size.Y);
@@ -81,12 +132,12 @@ namespace AlvericsQuestEditor
             // Inicializa o menu
             menu = new Menu(window, viewMenu);
 
+            // Inizialica o mundo
             mundo = new Mundo(window, viewMundo);
 
+            // Aplica o zoom na view do mundo
             zoom = 10;
-
             AplicarZoomMundo();
-
 
             deltatime = 0;
             clock = new Clock();
@@ -122,15 +173,10 @@ namespace AlvericsQuestEditor
                 // Trata os eventos da janela
                 window.DispatchEvents();
                 
-
+                // Muda para a view do mundo e desenha o mundo
                 window.SetView(viewMundo);
                 mundo.Desenhar();
                 mundo.Mover(deltatime, -zoom);
-
-                /*if(acao == Acao.GerenciarConexao)
-                {
-                    
-                }*/
 
                 // Muda para a viewMenu e desenha o menu na tela
                 window.SetView(viewMenu);
@@ -148,16 +194,20 @@ namespace AlvericsQuestEditor
 
         private void TratarEventos()
         {
+            /* Trata certos eventos */
+
+            // Retorna as coordenadas do mouse em relação à janela
             posMouseMundo = window.MapPixelToCoords(Mouse.GetPosition(window), viewMundo);
 
+            // Adiciona um objeto caso seja permitido na posiçã em que o botão esquerdo do mouse foi pressionado
             if (acao == Acao.AdicionarObjeto &&
                 Mouse.GetPosition(window).X <= window.Size.X * Informacoes.propViewMundo &&
                 Mouse.IsButtonPressed(Mouse.Button.Left))
             {
                 mundo.GerenciadorEnt.InserirEntidade(posMouseMundo.X, posMouseMundo.Y);
-                //Console.WriteLine(mundo.GerenciadorEnt.QuantidadeTotalEntidades());
             }
 
+            // Exclui um objeto na posição em que o botão esquerdo do mouse foi pressionado
             else if (acao == Acao.ExcluirObjeto &&
                 Mouse.GetPosition(window).X <= window.Size.X * Informacoes.propViewMundo &&
                 Mouse.IsButtonPressed(Mouse.Button.Left))
@@ -165,6 +215,7 @@ namespace AlvericsQuestEditor
                 mundo.GerenciadorEnt.ExcluirEntidade(posMouseMundo.X, posMouseMundo.Y);
             }
 
+            // Cria uma thread para criar uma nova janela mostrando um aviso antes de um novo mundo ser criado
             else if (acao == Acao.NovoMundo)
             {
                 acao = Acao.Nenhum;
@@ -173,6 +224,7 @@ namespace AlvericsQuestEditor
                 t1.Start();
             }
 
+            // Cria um novo mundo limpando todas as listas
             if (novoMundo)
             {
                 novoMundo = false;
@@ -184,6 +236,8 @@ namespace AlvericsQuestEditor
 
         public void MostrarAvisoNovoMundo()
         {
+            /* Mostra uma janela contendo um aviso antes de um novo mundo ser criado. Se a opção for sim, um munod novo é criado */
+
             DialogResult dialogResult = MessageBox.Show("Deseja criar um novo mundo?\nTodo o progresso não salvo será perdido!",
                                                             "Aviso", MessageBoxButtons.YesNo);
             if (dialogResult == DialogResult.Yes)
@@ -193,85 +247,93 @@ namespace AlvericsQuestEditor
             bloqueandoAcoes = false;
         }
 
-        /* Método chamado quando a tela é redimensionada */
         private void Window_Resized(object sender, EventArgs e)
         {
+            /* Método chamado quando a tela é redimensionada */
+
             // Redimensionar menu
             viewMenu.Size = new Vector2f(window.Size.X * Informacoes.propViewMenu, window.Size.Y);
             menu.Redimensionar();
 
+            // Redimensionar mundo
             viewMundo.Size = new Vector2f(window.Size.X * Informacoes.propViewMundo, window.Size.Y);
             AplicarZoomMundo();
         }
 
-        /* Método chamado quando o botão 'fechar janela' é pressionado */
         private void Window_Close(object sender, EventArgs e)
         {
+            /* Método chamado quando o botão 'fechar janela' é pressionado */
+
             RenderWindow window = (RenderWindow)sender;
             window.Close();
         }
 
-        /* Eventos quando os botões do mouse são pressionados */
         private void Window_MouseButtonPressed(object sender, MouseButtonEventArgs e)
         {
+            /* Eventos quando os botões do mouse são pressionados */
+
+            // Caso o botão esquerdo do mouse seja pressionado
             if (e.Button == Mouse.Button.Left && !bloqueandoAcoes)
             {
+                // Caso seja pressionado no menu
                 if (Mouse.GetPosition(window).X >= window.Size.X * Informacoes.propViewMundo)
                 {
                     Acao botaoPressionado = menu.BotaoPressionado(Mouse.GetPosition(window));
+                    acao = botaoPressionado;
 
-                    switch (botaoPressionado)
+                    if (botaoPressionado == Acao.IndicarEntidade)
                     {
-                        case Acao.IndicarEntidade:
-                            mundo.GerenciadorEnt.PosicaoEntidade = menu.PosicaoEntidade;
-                            break;
-
-                        default:
-                            acao = botaoPressionado;
-                            if (acao != Acao.GerenciarPropriedades)
-                            {
-                                menu.ArmadilhaAux = null;
-                                menu.AtualizarValores(Acao.Nenhum);
-                                mundo.GerenciadorEnt.ApagarQuadradoArmadilhas();
-                            }
-                            if (acao != Acao.GerenciarConexao)
-                            {
-                                mundo.ArmadilhaAux = null;
-                                mundo.MecanismoAux = null;
-
-                                if (acao != Acao.GerenciarPropriedades)
-                                {
-                                    mundo.GerenciadorEnt.ApagarQuadradoArmadilhas();
-                                    mundo.GerenciadorEnt.ApagarQuadradoMecanismos();
-                                }
-                                else
-                                    mundo.GerenciadorEnt.ApagarQuadradoMecanismos();
-                            }
-                            if(acao == Acao.GerenciarEventos)
-                                gerenciadorArquivos.CarregarEventos();
-
-                            if (acao == Acao.Salvar)
-                                gerenciadorArquivos.SalvarMundo(mundo.GerenciadorEnt.entidadesTangiveis,
-                                                                mundo.GerenciadorEnt.entidadesIntangiveis,
-                                                                mundo.GerenciadorEnt.armadilhas,
-                                                                mundo.GerenciadorEnt.mecanismos,
-                                                                mundo.GerenciadorEnt.escadas);
-                            if (acao == Acao.Carregar)
-                            {
-                                zoom = 10;
-                                AplicarZoomMundo();
-                                viewMundo.Center = new Vector2f(0, 0);
-                                gerenciadorArquivos.CarregarMundo(mundo.GerenciadorEnt);
-                            }
-                                
-                                
-                            break;
+                        mundo.GerenciadorEnt.PosicaoEntidade = menu.PosicaoEntidade;
+                        acao = Acao.AdicionarObjeto;
                     }
+                     
+                    if (acao != Acao.GerenciarPropriedades)
+                    {
+                        menu.ArmadilhaAux = null;
+                        menu.AtualizarValores(Acao.Nenhum);
+                        mundo.GerenciadorEnt.ApagarQuadradoArmadilhas();
+                    }
+
+                    if (acao != Acao.GerenciarConexao)
+                    {
+                        mundo.ArmadilhaAux = null;
+                        mundo.MecanismoAux = null;
+
+                        if (acao != Acao.GerenciarPropriedades)
+                        {
+                            mundo.GerenciadorEnt.ApagarQuadradoArmadilhas();
+                            mundo.GerenciadorEnt.ApagarQuadradoMecanismos();
+                        }
+
+                        else
+                            mundo.GerenciadorEnt.ApagarQuadradoMecanismos();
+                    }
+
+                    if (acao == Acao.GerenciarEventos)
+                         gerenciadorArquivos.CarregarEventos();
+
+                    else if (acao == Acao.Salvar)
+                         gerenciadorArquivos.SalvarMundo(mundo.GerenciadorEnt.EntidadesTangiveis,
+                                                         mundo.GerenciadorEnt.EntidadesIntangiveis,
+                                                         mundo.GerenciadorEnt.Armadilhas,
+                                                         mundo.GerenciadorEnt.Mecanismos,
+                                                         mundo.GerenciadorEnt.Escadas);
+                    else if (acao == Acao.Carregar)
+                    {
+                        zoom = 5;
+                        AplicarZoomMundo();
+                        viewMundo.Center = new Vector2f(0, 0);
+                        gerenciadorArquivos.CarregarMundo(mundo.GerenciadorEnt);
+                    }
+                        
                 }
+
+                // Caso o botão seja pressionado no mundo
                 else
                 {
                     switch (acao)
                     {
+                        // Gerencia as propriedades de uma armadilha
                         case Acao.GerenciarPropriedades:
                             menu.ArmadilhaAux = mundo.GerenciadorEnt.SelecionarArmadilha(posMouseMundo.X, posMouseMundo.Y);
                             mundo.GerenciadorEnt.ApagarQuadradoArmadilhas();
@@ -282,6 +344,7 @@ namespace AlvericsQuestEditor
                             menu.AtualizarValores(Acao.Nenhum);
                             break;
 
+                        // Cria uma conexão entre duas entidades
                         case Acao.GerenciarConexao:
                             Armadilha aAux = mundo.GerenciadorEnt.SelecionarArmadilha(posMouseMundo.X, posMouseMundo.Y);
                             Mecanismo mAux = mundo.GerenciadorEnt.SelecionarMecanismo(posMouseMundo.X, posMouseMundo.Y);
@@ -348,12 +411,15 @@ namespace AlvericsQuestEditor
                             
                             break;
 
+                        // Carrega um novo diálogo e o relaciona com um NPC
                         case Acao.GerenciarDialogos:
                             if (mundo.GerenciadorEnt.HaNPCAqui(posMouseMundo.X, posMouseMundo.Y))
                                 gerenciadorArquivos.CarregarDialogo(posMouseMundo);
                             break;
 
                         case Acao.GerenciarMusicas:
+
+                            // Cria a área ocupada por uma música ou carrega o título da músic aa partir de um arquivo
                             if (mundo.MusicaAux == null)
                             {
                                 Musica auxM = mundo.HaMusicaAqui(new Vector2f(posMouseMundo.X, posMouseMundo.Y));
@@ -383,12 +449,16 @@ namespace AlvericsQuestEditor
                     }
                 }
             }
+
+            // Caso o botão direito do mouse seja pressioanado
             else if (e.Button == Mouse.Button.Right && !bloqueandoAcoes)
             {
+                // Caso seja pressionado no mundo
                 if (Mouse.GetPosition(window).X <= window.Size.X * Informacoes.propViewMundo)
                 {
                     switch (acao)
                     {
+                        // Exclui a coneão entre duas entidades
                         case Acao.GerenciarConexao:
                             if(mundo.MecanismoAux != null)
                             {
@@ -409,7 +479,7 @@ namespace AlvericsQuestEditor
                             }
                             break;
 
-
+                        // Exclui uma música
                         case Acao.GerenciarMusicas:
                             Musica auxM = mundo.HaMusicaAqui(new Vector2f(posMouseMundo.X, posMouseMundo.Y));
                             if (auxM != null)
@@ -423,7 +493,9 @@ namespace AlvericsQuestEditor
 
         private void Window_MouseWheelScrolled(object sender, MouseWheelScrollEventArgs e)
         {
-            // Caso seja ativado no menu
+            /* Método chamado quando a roda do mouse é ativada */
+
+            // Caso seja ativado no menu move o menu para baixo e para cima
             if(Mouse.GetPosition(window).X >= window.Size.X * Informacoes.propViewMundo)
             {
                 if (e.Delta == 1 && coordViewMenu.Y >= yViewMenuInicial)
@@ -440,7 +512,7 @@ namespace AlvericsQuestEditor
                 }
             }
 
-            // Caso seja ativado no mundo
+            // Caso seja ativado no mundo aplica mais ou menos zoom no mundo
             else
             {
                 if (e.Delta == 1)
@@ -459,6 +531,8 @@ namespace AlvericsQuestEditor
 
         private void AplicarZoomMundo()
         {
+            /* Aplica mais ou menos zoom no mundo dependendo do fator 'zoom' */
+
             if (zoom > 0)
             {
                 for (int i = 0; i < zoom; i++)
