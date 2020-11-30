@@ -283,9 +283,11 @@ namespace AlvericsQuestEditor
                 // posição em x, posição em y, x mais o comprimento, y mais a altura do botão
                 // window.MapCoordsToPixel retorna as coordenadas em relação à janela daquele sprite
                 bCoord = window.MapCoordsToPixel(botao.BSprite.Position);
+
                 // Permite descobrir as coordenadas reais do sprite, sem sua mudança no valor da origem
                 bCoord.X -= (int)(botao.Dimensoes.X / 2);
                 bCoord.Y -= (int)(botao.Dimensoes.Y / 2);
+
                 // Permite descobrir as coordenadas finais de um botão
                 bComprimento = bCoord.X + botao.Dimensoes.X;
                 bAltura = bCoord.Y + botao.Dimensoes.Y;
@@ -327,9 +329,6 @@ namespace AlvericsQuestEditor
                     if (mousePos.X >= bCoord.X && mousePos.X <= bComprimento &&
                         mousePos.Y >= bCoord.Y && mousePos.Y <= bAltura)
                     {
-                        // Reseta a cor de todos os botões para o branco
-                        // ResetarCorBotoes();
-
                         // Pinta o botão com uma cor diferente dos demais
                         botao.BSprite.Color = new Color(50, 70, 90);
 
